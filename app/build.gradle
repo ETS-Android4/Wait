@@ -36,6 +36,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    // timeText rolling animation
-    api 'com.github.YvesCheung.RollingText:RollingText:1.2.10'
+    // powerful textview animation
+    def hTextView_version = "0.1.6"
+    implementation "com.hanks:htextview-base:$hTextView_version"
+    implementation "com.hanks:htextview-evaporate:$hTextView_version"
 }
