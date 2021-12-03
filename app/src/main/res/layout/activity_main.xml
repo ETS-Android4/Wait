@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:htext="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,6 +13,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/main_LL1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -20,7 +22,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="48dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
                 android:weightSum="10">
@@ -35,52 +36,124 @@
                         android:id="@+id/mainDateToday_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"
+                        android:layout_marginTop="48dp"
+                        android:text="yyyy/MM/dd"
                         android:format24Hour="yyyy年MM月dd日"
                         android:format12Hour="yyyy年MM月dd日"
                         android:textColor="@color/grey">
                     </TextClock>
 
-                    <com.yy.mobile.rollingtextview.RollingTextView
-                        android:id="@+id/mainTimeNow_rollingTextView"
+                    <LinearLayout
+                        android:id="@+id/mainTime_LL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="start"
-                        android:textColor="@color/white"
-                        android:textSize="36sp"
-                        android:textStyle="bold">
-                    </com.yy.mobile.rollingtextview.RollingTextView>
+                        android:orientation="horizontal">
 
+                        <com.hanks.htextview.evaporate.EvaporateTextView
+                            android:id="@+id/mainTimeHour_customTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="6dp"
+                            android:text="00"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
+                            android:textStyle="bold">
+                        </com.hanks.htextview.evaporate.EvaporateTextView>
+
+                        <TextView
+                            android:id="@+id/mainTimeColon1_textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginHorizontal="3dp"
+                            android:text=":"
+                            android:textColor="@color/white"
+                            android:textSize="36sp">
+                        </TextView>
+
+                        <com.hanks.htextview.evaporate.EvaporateTextView
+                            android:id="@+id/mainTimeMinute_customTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="6dp"
+                            android:text="00"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
+                            android:textStyle="bold">
+                        </com.hanks.htextview.evaporate.EvaporateTextView>
+
+                        <TextView
+                            android:id="@+id/mainTimeColon2_textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginHorizontal="3dp"
+                            android:text=":"
+                            android:textColor="@color/white"
+                            android:textSize="36sp">
+                        </TextView>
+
+                        <com.hanks.htextview.evaporate.EvaporateTextView
+                            android:id="@+id/mainTimeSecond_customTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="6dp"
+                            android:text="00"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
+                            android:textStyle="bold">
+                        </com.hanks.htextview.evaporate.EvaporateTextView>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/mainOwner_LL"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_weight="6">
 
                     <TextView
+                        android:id="@+id/mainPoweredBy_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="54dp"
                         android:gravity="end"
                         android:text="POWERED BY"
-                        android:textSize="9sp"
                         android:textStyle="bold"
+                        android:textSize="9sp"
                         android:textColor="@color/grey">
                     </TextView>
 
                     <TextView
+                        android:id="@+id/mainOwnerName_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="Jiannan"
+                        android:text="JONAS"
                         android:textSize="17sp"
                         android:textStyle="bold"
                         android:textColor="@color/white">
                     </TextView>
                 </LinearLayout>
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/main_LL2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ImageView
+        android:id="@+id/changeConfig_imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="12dp"
+        android:src="@drawable/ic_baseline_fullscreen_24">
+    </ImageView>
 </FrameLayout>
