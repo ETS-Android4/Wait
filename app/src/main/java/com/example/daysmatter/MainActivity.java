@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,10 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hanks.htextview.evaporate.EvaporateTextView;
+import com.scwang.smart.refresh.header.MaterialHeader;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 import java.util.Objects;
 
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence sysTimeMinuteStr;
     private CharSequence sysTimeSecondStr;
     private ImageView changeConfig_imageView;
+    private ImageView addMatter_imageView;
     private TimeThread timeThread;
 
     //在主线程里面处理消息并更新UI界面
@@ -71,8 +76,16 @@ public class MainActivity extends AppCompatActivity {
         mainPoweredBy_textView = findViewById(R.id.mainPoweredBy_textView);
         mainOwnerName_textView = findViewById(R.id.mainOwnerName_textView);
         changeConfig_imageView = findViewById(R.id.changeConfig_imageView);
+        addMatter_imageView = findViewById(R.id.addMatter_imageView);
 
         adjustHeaderTexts();
+
+        addMatter_imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addMatter_imageView.setAlpha(0.5f);
+            }
+        });
 
         changeConfig_imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,19 +190,24 @@ public class MainActivity extends AppCompatActivity {
         // place the time information in the middle of the screen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        frameLayoutParams.gravity = Gravity.CENTER;
-        main_LL1.setLayoutParams(frameLayoutParams);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.CENTER;
+        main_LL1.setLayoutParams(layoutParams);
         main_LL2.setVisibility(View.GONE);
         mainOwner_LL.setVisibility(View.GONE);
         mainTime_LL.setGravity(Gravity.CENTER);
 
+        int width = main_LL1.getWidth();
         mainDateToday_textView.setVisibility(View.GONE);
-        mainTimeHour_customTextView.setTextSize(100f);
-        mainTimeMinute_customTextView.setTextSize(100f);
-        mainTimeSecond_customTextView.setTextSize(100f);
-        mainTimeColon1_textView.setTextSize(100f);
-        mainTimeColon2_textView.setTextSize(100f);
+        mainTimeHour_customTextView.setTextSize(width / 7 + 0.0F);
+        mainTimeMinute_customTextView.setTextSize(width / 7 + 0.0F);
+        mainTimeSecond_customTextView.setTextSize(width / 7 + 0.0F);
+        mainTimeColon1_textView.setTextSize(width / 7 + 0.0F);
+        mainTimeColon2_textView.setTextSize(width / 7 + 0.0F);
+
+        int imageResource = getResources().getIdentifier("@drawable/ic_baseline_fullscreen_exit_24", null, getPackageName());
+        @SuppressLint("UseCompatLoadingForDrawables") Drawable res = getResources().getDrawable(imageResource);
+        changeConfig_imageView.setImageDrawable(res);
     }
 
     public void setPortraitAttr(){
@@ -208,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
         mainTimeSecond_customTextView.setTextSize(36f);
         mainTimeColon1_textView.setTextSize(36f);
         mainTimeColon2_textView.setTextSize(36f);
+
+        int imageResource = getResources().getIdentifier("@drawable/ic_baseline_fullscreen_24", null, getPackageName());
+        @SuppressLint("UseCompatLoadingForDrawables") Drawable res = getResources().getDrawable(imageResource);
+        changeConfig_imageView.setImageDrawable(res);
     }
 
     private void hideSystemUi(){
