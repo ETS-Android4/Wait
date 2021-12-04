@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
 
     <androidx.core.widget.NestedScrollView
@@ -199,13 +199,13 @@
         android:src="@drawable/ic_baseline_fullscreen_24">
     </ImageView>
 
-    <ImageView
-        android:id="@+id/addMatter_imageView"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addMatter_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="12dp"
-        android:alpha="0.5"
-        android:src="@drawable/ic_baseline_add_box_24">
-    </ImageView>
+        android:src="@drawable/ic_baseline_add_24"
+        android:backgroundTint="@color/white">
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
 </FrameLayout>

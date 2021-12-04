@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.daysmatter">
+    package="com.example.daysmatter" >
 
     <application
         android:allowBackup="true"
@@ -8,11 +8,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DaysMatter">
+        android:theme="@style/Theme.DaysMatter" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.AddNewEventActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.MainActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
