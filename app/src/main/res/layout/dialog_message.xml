@@ -4,16 +4,7 @@
     xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:background="@drawable/dialog_corner_bg"
-    android:paddingBottom="16dp"
-    >
-    <ImageView
-        android:id="@+id/dialog_img"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/ic_baseline_close_24"
-        android:layout_marginTop="12dp"
-        android:layout_centerHorizontal="true"
-        />
+    android:paddingBottom="12dp">
 
 
     <TextView
@@ -29,6 +20,21 @@
         android:layout_centerInParent="true"
         />
 
+    <TextView
+        android:id="@+id/dialog_btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/dialog_btn_bg_grey"
+        android:gravity="center"
+        android:paddingLeft="30dp"
+        android:paddingTop="6dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="6dp"
+        android:text="取消"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/dialog_btn_comfirm"
@@ -42,7 +48,8 @@
         android:paddingBottom="6dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="12dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         />
 

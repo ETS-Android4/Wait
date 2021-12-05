@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -47,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MattersRVAdapter.MyOnLongClickListener, MattersRVAdapter.MyOnClickListener{
 
     private LinearLayout main_LL1;
     private NestedScrollView main_NSV;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Matter> dbMatterList;
     private MatterList matterList;
+    private int positionOnClick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,8 +114,18 @@ public class MainActivity extends AppCompatActivity {
         mainMatters_recyclerView = findViewById(R.id.mainMatters_recyclerView);
 
         adjustHeaderTexts();
+
         setMattersView();
-        addMatterOnClickListener();
+
+//        if (mattersRVAdapter != null) {
+//            mattersRVAdapter.setOnLongClickListener(new MattersRVAdapter.MyOnLongClickListener() {
+//                @Override
+//                public void OnItemLongClickListener(View view, int position) {
+//                    Toast.makeText(MainActivity.this,"你长按了"+position,Toast.LENGTH_SHORT).show();
+//                    matterOnLongClickDialog();
+//                }
+//            });
+//        }
 
         addMatter_fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,15 +312,15 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         timeThread.pauseThread();
     }
-
+    x
     @Override
     protected void onResume() {
         super.onResume();
         timeThread.resumeThread();
 
-        // TODO: Make the Adapter notify more reasonable
+//         TODO: Make the Adapter notify more reasonable
         matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
-        mattersRVAdapter = new MattersRVAdapter(matterList);
+        mattersRVAdapter = new MattersRVAdapter(matterList, this, this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
@@ -318,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
             mainNoMatter_LL.setVisibility(View.VISIBLE);
         }
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false){
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false){
             @Override
             public boolean canScrollVertically() {
                 //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
@@ -326,37 +339,55 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
-        mattersRVAdapter = new MattersRVAdapter(matterList);
+        mattersRVAdapter = new MattersRVAdapter(matterList,this,this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
-    public void addMatterOnClickListener(){
-        mattersRVAdapter.setOnItemLongClickListener(new MattersRVAdapter.OnItemLongClickListener() {
-            @Override
-            public void OnItemLongClick(View view, int position) {
-                matterOnLongClickDialog();
-            }
-        });
+    @Override
+    public void OnItemClickListener(View view, int position) {
+        positionOnClick = position;
+        Log.d("MAIN", position + " item clicked");
+    }
+
+    @Override
+    public void OnItemLongClickListener(View view, int position) {
+        positionOnClick = position;
+        Log.d("MAIN", position + " item long clicked");
+        matterOnLongClickDialog();
     }
 
     public void matterOnLongClickDialog(){
-        View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.dialog_message, null);
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_message, null);
         TextView confirm;    //确定按钮
         final TextView content;    //内容
+        final TextView cancel;
         confirm = (TextView) view.findViewById(R.id.dialog_btn_comfirm);
+        cancel = (TextView) view.findViewById(R.id.dialog_btn_cancel);
         content = (TextView) view.findViewById(R.id.dialog_txt_content);
-        final Dialog dialog = new Dialog(getApplicationContext());
+        final Dialog dialog = new Dialog(MainActivity.this);
         dialog.setContentView(view);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         confirm.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onClick(View v) {
+                LitePal.deleteAll(Matter.class,"title=?",matterList.getMatter(positionOnClick).getTitle());
+                matterList.deleteMatter(matterList.getMatter(positionOnClick));
+                mattersRVAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
             }
         });
+
         dialog.show();
-        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        DisplayMetrics dm = MainActivity.this.getResources().getDisplayMetrics();
         int displayWidth = dm.widthPixels;
         int displayHeight = dm.heightPixels;
         android.view.WindowManager.LayoutParams p = dialog.getWindow().getAttributes();  //获取对话框当前的参数值

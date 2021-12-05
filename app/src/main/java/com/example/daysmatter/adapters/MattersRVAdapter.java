@@ -1,5 +1,7 @@
 package com.example.daysmatter.adapters;
 
+import android.app.Dialog;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.daysmatter.R;
 import com.example.daysmatter.models.Matter;
@@ -21,23 +22,25 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
 
     private MatterList matterList;
 
-    private OnItemClickListener mOnItemClickListener;
-    private OnItemLongClickListener mOnItemLongClickListener;
+    private MyOnLongClickListener myOnLongClickListener;
+    private MyOnClickListener myOnClickListener;
+
 
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
         View cardContentCardView;
         TextView cardContentTitle_textView;
         TextView cardContentTime_textView;
         TextView cardContentDays_textView;
 
+        MyOnLongClickListener myOnLongClickListener;
+        MyOnClickListener myOnClickListener;
 
-
-        public ViewHolder(View view) {
+        public ViewHolder(View view, MyOnClickListener myOnClickListener, MyOnLongClickListener myOnLongClickListener) {
             super(view);
             // Define click listener for the ViewHolder's View
             cardContentCardView = view.findViewById(R.id.cardContentCardView);
@@ -45,13 +48,39 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
             cardContentTime_textView = view.findViewById(R.id.cardContentTime_textView);
             cardContentDays_textView = view.findViewById(R.id.cardContentDays_textView);
 
-            cardContentCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int p = getAdapterPosition();
-                    Log.d("ADAPTER", String.valueOf(p) + " item onClick");
-                }
-            });
+            this.myOnClickListener = myOnClickListener;
+            this.myOnLongClickListener = myOnLongClickListener;
+
+
+            itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
+        }
+
+        public View getCardContentCardView() {
+            return cardContentCardView;
+        }
+
+        public TextView getCardContentTitle_textView() {
+            return cardContentTitle_textView;
+        }
+
+        public TextView getCardContentTime_textView() {
+            return cardContentTime_textView;
+        }
+
+        public TextView getCardContentDays_textView() {
+            return cardContentDays_textView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            myOnClickListener.OnItemClickListener(v, getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            myOnLongClickListener.OnItemLongClickListener(v, getAdapterPosition());
+            return false;
         }
     }
 
@@ -61,8 +90,10 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
      * @param matterList ViewPager2[] containing the data to populate views to be used
      * by RecyclerView.
      */
-    public MattersRVAdapter(MatterList matterList) {
+    public MattersRVAdapter(MatterList matterList, MyOnClickListener myOnClickListener, MyOnLongClickListener myOnLongClickListener) {
         this.matterList = matterList;
+        this.myOnClickListener = myOnClickListener;
+        this.myOnLongClickListener = myOnLongClickListener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -71,18 +102,9 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         // Create a new view, which defines the UI of the list item
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.content_matter_cardview, viewGroup, false);
+        final ViewHolder viewHolder = new ViewHolder(view, myOnClickListener, myOnLongClickListener);
 
-        final ViewHolder viewHolder = new ViewHolder(view);
-        viewHolder.cardContentCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //viewHolder.getAdapterPosition()将会返回被点击的item的index
-                int position = viewHolder.getAdapterPosition();
-                Matter matter = matterList.getMatter(position);
-                Toast.makeText(v.getContext(),"Click: "+matter.getTitle(),Toast.LENGTH_SHORT).show();
-            }
-        });
-        return new ViewHolder(view);
+        return viewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -93,29 +115,13 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         viewHolder.cardContentTitle_textView.setText(matter.getTitle());
         viewHolder.cardContentTime_textView.setText(convertDateToString(matter.getTargetDate()));
         viewHolder.cardContentDays_textView.setText(getRemainedDays(matter.getTargetDate()));
+    }
 
-        //设置点击事件
-        if (mOnItemClickListener != null) {
-            viewHolder.cardContentCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos = viewHolder.getLayoutPosition();
-                    mOnItemClickListener.OnItemClick(viewHolder.itemView, pos);
-                }
-            });
-        }
-
-        //设置长按事件
-        if (mOnItemLongClickListener != null) {
-            viewHolder.cardContentCardView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int pos = viewHolder.getLayoutPosition();
-                    mOnItemLongClickListener.OnItemLongClick(v, pos);
-                    return true;
-                }
-            });
-        }
+    public static interface MyOnClickListener{
+        void OnItemClickListener(View view, int position);
+    }
+    public static interface MyOnLongClickListener {
+        void OnItemLongClickListener(View view, int position);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -134,22 +140,4 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         long difference =  (date.getTime() - dateNow.getTime()) / 86400000;
         return String.valueOf(Math.abs(difference));
     }
-
-    public interface OnItemClickListener {
-        void OnItemClick(View view, int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
-        this.mOnItemClickListener = mOnItemClickListener;
-    }
-
-    public interface OnItemLongClickListener {
-        void OnItemLongClick(View view, int position);
-    }
-
-    public void setOnItemLongClickListener(OnItemLongClickListener mOnItemLongClickListener) {
-        this.mOnItemLongClickListener = mOnItemLongClickListener;
-    }
-
-
 }
