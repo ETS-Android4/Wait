@@ -52,4 +52,10 @@ dependencies {
 
     // gif plugin
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23'
+
+    // edit text material
+    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    // clickable image view
+    implementation 'com.github.dmallcott:DismissibleImageView:1.0.1'
 }

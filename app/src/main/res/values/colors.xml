@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#A9A9A9</color>
+    <color name="red_error">#a63131</color>
+    <color name="blue_date">#2d97b7</color>
 </resources>
