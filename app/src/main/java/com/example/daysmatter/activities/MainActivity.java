@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
         adjustHeaderTexts();
         setMattersView();
+        addMatterOnClickListener();
 
         addMatter_fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        mainMatters_recyclerView
     }
 
     @SuppressLint("HandlerLeak")
@@ -323,5 +324,9 @@ public class MainActivity extends AppCompatActivity {
         mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
         mattersRVAdapter = new MattersRVAdapter(matterList);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
+    }
+
+    public void addMatterOnClickListener(){
+
     }
 }
