@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,11 +23,18 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.daysmatter.R;
+import com.example.daysmatter.models.Matter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hanks.htextview.evaporate.EvaporateTextView;
 
+import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -49,10 +57,14 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence sysTimeSecondStr;
     private ImageView changeConfig_imageView;
     private FloatingActionButton addMatter_fab;
+    private LinearLayout mainNoMatter_LL;
+    private RecyclerView mainMatters_recyclerView;
     private TimeThread timeThread;
 
     //在主线程里面处理消息并更新UI界面
     private Handler mHandler;
+
+    private ArrayList<Matter> dbMatterList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void baseInit(){
+        //deal with database
+        SQLiteDatabase db = LitePal.getDatabase();
+
+        dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
+
         main_LL1 = findViewById(R.id.main_LL1);
         main_LL2 = findViewById(R.id.main_LL2);
         mainOwner_LL = findViewById(R.id.mainOwner_LL);
@@ -78,8 +95,11 @@ public class MainActivity extends AppCompatActivity {
         mainOwnerName_textView = findViewById(R.id.mainOwnerName_textView);
         changeConfig_imageView = findViewById(R.id.changeConfig_imageView);
         addMatter_fab = findViewById(R.id.addMatter_fab);
+        mainNoMatter_LL = findViewById(R.id.mainNoMatter_LL);
+        mainMatters_recyclerView = findViewById(R.id.mainMatters_recyclerView);
 
         adjustHeaderTexts();
+        setMattersView();
 
         addMatter_fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,5 +283,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         timeThread.resumeThread();
+    }
+
+    public void setMattersView(){
+        if (dbMatterList.size() > 0){
+            mainNoMatter_LL.setVisibility(View.GONE);
+        }else {
+            mainNoMatter_LL.setVisibility(View.VISIBLE);
+        }
     }
 }

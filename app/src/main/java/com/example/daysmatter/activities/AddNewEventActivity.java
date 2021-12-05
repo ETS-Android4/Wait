@@ -11,6 +11,7 @@ import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -31,10 +32,14 @@ import android.widget.Toast;
 
 import com.dmallcott.dismissibleimageview.DismissibleImageView;
 import com.example.daysmatter.R;
+import com.example.daysmatter.models.Matter;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class AddNewEventActivity extends AppCompatActivity {
@@ -49,6 +54,8 @@ public class AddNewEventActivity extends AppCompatActivity {
 
     private Date selectedDate;
     public static final int PICK_PHOTO = 102;
+    private static ArrayList<Matter> sMatterList = new ArrayList<>();
+    private String imageSourcePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,14 +100,15 @@ public class AddNewEventActivity extends AppCompatActivity {
         addEventDeletePhoto_imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                addEventPhoto_imageView.setImageDrawable(null);
             }
         });
 
         addEventSubmit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                addEventPickDate_editText.validateWith(new RegexpValidator("日期为必填项", "^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]))$"));
+                saveEvent();
             }
         });
     }
@@ -214,6 +222,7 @@ public class AddNewEventActivity extends AppCompatActivity {
             // 如果是file类型的Uri，直接获取图片路径即可
             imagePath = uri.getPath();
         }
+        imageSourcePath = imagePath;
         // 根据图片路径显示图片
         displayImage(imagePath);
     }
@@ -225,6 +234,7 @@ public class AddNewEventActivity extends AppCompatActivity {
     private void handleImageBeforeKitKat(Intent data) {
         Uri uri = data.getData();
         String imagePath = getImagePath(uri, null);
+        imageSourcePath = imagePath;
         displayImage(imagePath);
     }
 
@@ -249,5 +259,28 @@ public class AddNewEventActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "获取相册图片失败", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void saveEvent(){
+        Matter matter = new Matter();
+        if (Objects.requireNonNull(addEventTitle_editText.getText()).toString().length() > 0){
+            matter.setTitle(Objects.requireNonNull(addEventTitle_editText.getText()).toString());
+            matter.setTargetDate(selectedDate);
+            matter.setImagePath(imageSourcePath);
+            boolean success = matter.save();
+            if (success) {
+                sMatterList.add(matter);
+                Toast.makeText(AddNewEventActivity.this, "事件保存成功!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(AddNewEventActivity.this, "事件保存失败!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static void actionStart(Context context, ArrayList<Matter> matterList) {
+        Intent i = new Intent(context, AddNewEventActivity.class);
+        sMatterList = matterList;
+        context.startActivity(i);
     }
 }
