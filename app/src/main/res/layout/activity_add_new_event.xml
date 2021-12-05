@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activities.AddNewEventActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="228dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/white"
+            app:expandedTitleMarginEnd="60dp"
+            app:expandedTitleMarginStart="72dp"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:title="创\t建\t事\t件">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/black_cat"
+                android:background="@color/white"
+                android:paddingStart="12dp"
+                android:scaleType="matrix">
+            </pl.droidsonroids.gif.GifImageView>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/addEventToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+                <ImageView
+                    android:id="@+id/addEventBack_imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_arrow_back_black_24"
+                    android:layout_marginEnd="24dp">
+                </ImageView>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="36dp"
+        android:fillViewport="true"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_baseline_auto_awesome_24">
+                </ImageView>
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addEventTitle_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="事件名称"
+                    android:textColorHint="@color/grey"
+                    android:textSize="24sp"
+                    app:met_baseColor="@color/black"
+                    app:met_errorColor="@color/red_error"
+                    app:met_helperTextColor="@color/grey"
+                    app:met_floatingLabel="normal"
+                    app:met_minCharacters="1"
+                    app:met_maxCharacters="20"
+                    app:met_helperText="它一定很重要  "
+                    app:met_hideUnderline="true">
+                </com.rengwuxian.materialedittext.MaterialEditText>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_grey">
+            </View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_baseline_date_range_black_24">
+                </ImageView>
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="目标日"
+                    app:met_textColorHint="@color/black"
+                    android:textSize="24sp"
+                    app:met_floatingLabel="none"
+                    app:met_hideUnderline="true"
+                    android:focusable="false">
+                </com.rengwuxian.materialedittext.MaterialEditText>
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/addEventPickDate_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="end|center_vertical"
+                    android:hint="选\t择\t日\t期"
+                    app:met_textColorHint="@color/red_error"
+                    app:met_baseColor="@color/black"
+                    android:textSize="15sp"
+                    app:met_errorColor="@color/red_error"
+                    app:met_floatingLabel="none"
+                    app:met_hideUnderline="true"
+                    android:focusable="false">
+                </com.rengwuxian.materialedittext.MaterialEditText>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_grey">
+            </View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_baseline_photo_camera_back_24">
+                </ImageView>
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="图片"
+                    app:met_textColorHint="@color/black"
+                    android:textSize="24sp"
+                    app:met_floatingLabel="none"
+                    app:met_hideUnderline="true"
+                    android:focusable="false">
+                </com.rengwuxian.materialedittext.MaterialEditText>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:id="@+id/addEventDeletePhoto_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/white"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="48dp"
+                        android:src="@drawable/ic_baseline_delete_24">
+                    </ImageButton>
+
+                    <ImageButton
+                        android:id="@+id/addEventPickPhoto_imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/white"
+                        android:layout_gravity="end"
+                        android:src="@drawable/ic_baseline_photo_24">
+                    </ImageButton>
+                </FrameLayout>
+            </LinearLayout>
+
+            <com.dmallcott.dismissibleimageview.DismissibleImageView
+                android:id="@+id/addEventPhoto_imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </com.dmallcott.dismissibleimageview.DismissibleImageView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/light_grey">
+            </View>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp">
+
+                <Button
+                    android:id="@+id/addEventSubmit_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:backgroundTint="@color/black"
+                    android:text="添加事件"
+                    android:textStyle="bold"
+                    android:textColor="@color/white">
+                </Button>
+            </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
