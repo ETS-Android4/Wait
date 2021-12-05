@@ -1,9 +1,11 @@
 package com.example.daysmatter.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -13,6 +15,7 @@ import android.os.Message;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -20,27 +23,29 @@ import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.daysmatter.R;
+import com.example.daysmatter.adapters.MattersRVAdapter;
 import com.example.daysmatter.models.Matter;
+import com.example.daysmatter.models.MatterList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hanks.htextview.evaporate.EvaporateTextView;
 
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private LinearLayout main_LL1;
+    private NestedScrollView main_NSV;
     private LinearLayout main_LL2;
     private LinearLayout mainOwner_LL;
     private LinearLayout mainTime_LL;
@@ -59,12 +64,14 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton addMatter_fab;
     private LinearLayout mainNoMatter_LL;
     private RecyclerView mainMatters_recyclerView;
+    private MattersRVAdapter mattersRVAdapter;
     private TimeThread timeThread;
 
     //在主线程里面处理消息并更新UI界面
     private Handler mHandler;
 
     private ArrayList<Matter> dbMatterList;
+    private MatterList matterList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
     private void baseInit(){
         //deal with database
         SQLiteDatabase db = LitePal.getDatabase();
-
         dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
 
         main_LL1 = findViewById(R.id.main_LL1);
+        main_NSV = findViewById(R.id.main_NSV);
         main_LL2 = findViewById(R.id.main_LL2);
         mainOwner_LL = findViewById(R.id.mainOwner_LL);
         mainTime_LL = findViewById(R.id.mainTime_LL);
@@ -219,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
         // place the time information in the middle of the screen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) main_NSV.getLayoutParams();
+        p.setMargins(0, 0, 0, 0);
+        main_NSV.requestLayout();
+
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         layoutParams.gravity = Gravity.CENTER;
         main_LL1.setLayoutParams(layoutParams);
@@ -242,6 +253,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setPortraitAttr(){
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) main_NSV.getLayoutParams();
+        p.setMargins(0, 0, 0, 200);
+        main_NSV.requestLayout();
 
         FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         frameLayoutParams.gravity = Gravity.TOP;
@@ -283,13 +298,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         timeThread.resumeThread();
+
+        // TODO: Make the Adapter notify more reasonable
+        matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
+        mattersRVAdapter = new MattersRVAdapter(matterList);
+        mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
     public void setMattersView(){
+        matterList = new MatterList(dbMatterList);
         if (dbMatterList.size() > 0){
             mainNoMatter_LL.setVisibility(View.GONE);
         }else {
             mainNoMatter_LL.setVisibility(View.VISIBLE);
         }
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false){
+            @Override
+            public boolean canScrollVertically() {
+                //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
+                return false;
+            }
+        };
+        mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
+        mattersRVAdapter = new MattersRVAdapter(matterList);
+        mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 }
