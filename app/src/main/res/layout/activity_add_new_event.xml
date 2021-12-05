@@ -21,7 +21,7 @@
             app:expandedTitleMarginEnd="60dp"
             app:expandedTitleMarginStart="72dp"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-            app:title="New Event">
+            app:title="创\t建\t事\t件">
 
             <pl.droidsonroids.gif.GifImageView
                 android:layout_width="match_parent"
@@ -98,7 +98,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey">
+                android:background="@color/light_grey">
             </View>
 
             <LinearLayout
@@ -132,9 +132,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:hint="选择日期"
-                    app:met_textColorHint="@color/blue_date"
-                    app:met_baseColor="@color/blue_date"
+                    android:hint="选\t择\t日\t期"
+                    app:met_textColorHint="@color/red_error"
+                    app:met_baseColor="@color/black"
                     android:textSize="18sp"
                     app:met_errorColor="@color/red_error"
                     app:met_floatingLabel="none"
@@ -146,7 +146,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey">
+                android:background="@color/light_grey">
             </View>
 
             <LinearLayout
@@ -179,22 +179,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/addEventDeletePhoto_imageView"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="end"
-                        android:layout_marginEnd="36dp"
+                        android:layout_marginEnd="54dp"
                         android:src="@drawable/ic_baseline_delete_24">
-                    </ImageView>
+                    </ImageButton>
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/addEventPickPhoto_imageView"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="end"
                         android:src="@drawable/ic_baseline_photo_24">
-                    </ImageView>
+                    </ImageButton>
                 </FrameLayout>
             </LinearLayout>
 
@@ -208,10 +208,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/grey">
+                android:background="@color/light_grey">
             </View>
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp">
 
+                <Button
+                    android:id="@+id/addEventSubmit_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:backgroundTint="@color/black"
+                    android:text="添加事件"
+                    android:textStyle="bold"
+                    android:textColor="@color/white">
+                </Button>
+            </FrameLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
