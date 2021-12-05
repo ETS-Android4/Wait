@@ -1,6 +1,7 @@
 package com.example.daysmatter.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -13,7 +14,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -25,6 +28,7 @@ import android.widget.TextClock;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -327,6 +331,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addMatterOnClickListener(){
+        mattersRVAdapter.setOnItemLongClickListener(new MattersRVAdapter.OnItemLongClickListener() {
+            @Override
+            public void OnItemLongClick(View view, int position) {
+                matterOnLongClickDialog();
+            }
+        });
+    }
 
+    public void matterOnLongClickDialog(){
+        View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.dialog_message, null);
+        TextView confirm;    //确定按钮
+        final TextView content;    //内容
+        confirm = (TextView) view.findViewById(R.id.dialog_btn_comfirm);
+        content = (TextView) view.findViewById(R.id.dialog_txt_content);
+        final Dialog dialog = new Dialog(getApplicationContext());
+        dialog.setContentView(view);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        int displayWidth = dm.widthPixels;
+        int displayHeight = dm.heightPixels;
+        android.view.WindowManager.LayoutParams p = dialog.getWindow().getAttributes();  //获取对话框当前的参数值
+        p.width = (int) (displayWidth * 0.55);    //宽度设置为屏幕的0.5
+        p.height = (int) (displayHeight * 0.28);    //宽度设置为屏幕的0.5
+        dialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+        dialog.getWindow().setAttributes(p);     //设置生效
     }
 }

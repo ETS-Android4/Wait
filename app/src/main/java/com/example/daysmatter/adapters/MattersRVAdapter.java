@@ -21,6 +21,9 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
 
     private MatterList matterList;
 
+    private OnItemClickListener mOnItemClickListener;
+    private OnItemLongClickListener mOnItemLongClickListener;
+
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
@@ -31,6 +34,8 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         TextView cardContentTitle_textView;
         TextView cardContentTime_textView;
         TextView cardContentDays_textView;
+
+
 
         public ViewHolder(View view) {
             super(view);
@@ -88,6 +93,29 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         viewHolder.cardContentTitle_textView.setText(matter.getTitle());
         viewHolder.cardContentTime_textView.setText(convertDateToString(matter.getTargetDate()));
         viewHolder.cardContentDays_textView.setText(getRemainedDays(matter.getTargetDate()));
+
+        //设置点击事件
+        if (mOnItemClickListener != null) {
+            viewHolder.cardContentCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = viewHolder.getLayoutPosition();
+                    mOnItemClickListener.OnItemClick(viewHolder.itemView, pos);
+                }
+            });
+        }
+
+        //设置长按事件
+        if (mOnItemLongClickListener != null) {
+            viewHolder.cardContentCardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int pos = viewHolder.getLayoutPosition();
+                    mOnItemLongClickListener.OnItemLongClick(v, pos);
+                    return true;
+                }
+            });
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -106,4 +134,22 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         long difference =  (date.getTime() - dateNow.getTime()) / 86400000;
         return String.valueOf(Math.abs(difference));
     }
+
+    public interface OnItemClickListener {
+        void OnItemClick(View view, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
+
+    public interface OnItemLongClickListener {
+        void OnItemLongClick(View view, int position);
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener mOnItemLongClickListener) {
+        this.mOnItemLongClickListener = mOnItemLongClickListener;
+    }
+
+
 }

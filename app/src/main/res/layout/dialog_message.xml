@@ -23,7 +23,6 @@
         android:singleLine="true"
         android:maxLines="1"
         android:textSize="18sp"
-        autofit:minTextSize="10sp"
         android:text="确认删除"
         android:gravity="center"
         android:layout_margin="6dp"
