@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        mainMatters_recyclerView
     }
 
     @SuppressLint("HandlerLeak")
