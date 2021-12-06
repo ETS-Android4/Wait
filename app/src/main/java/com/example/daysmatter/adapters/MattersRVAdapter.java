@@ -116,15 +116,7 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
                 .inflate(R.layout.content_matter_cardview, viewGroup, false);
         final ViewHolder viewHolder = new ViewHolder(view, myOnClickListener, myOnLongClickListener);
 
-        viewHolder.cardContentCardView.post(new Runnable() {
-            @Override
-            public void run() {
-                int height = viewHolder.cardContentCardView.getHeight();
-                ViewGroup.LayoutParams layoutParams = viewHolder.cardContentBG_imageView.getLayoutParams();
-                layoutParams.height = height;
-                viewHolder.cardContentBG_imageView.setLayoutParams(layoutParams);
-            }
-        });
+
         return viewHolder;
     }
 
@@ -145,11 +137,21 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         viewHolder.cardContentTime_textView.setText(convertDateToString(matter.getTargetDate()));
         viewHolder.cardContentDays_textView.setText(getRemainedDays(matter.getTargetDate()));
         try {
-            File file=new File(matter.getImagePath());
+            File file = new File(matter.getImagePath());
             viewHolder.cardContentBG_imageView.setImageURI(Uri.fromFile(file));
         }catch (NullPointerException e){
             setDefaultImage(viewHolder);
         }
+
+        viewHolder.cardContentCardView.post(new Runnable() {
+            @Override
+            public void run() {
+                int height = viewHolder.cardContentCardView.getHeight();
+                ViewGroup.LayoutParams layoutParams = viewHolder.cardContentBG_imageView.getLayoutParams();
+                layoutParams.height = height;
+                viewHolder.cardContentBG_imageView.setLayoutParams(layoutParams);
+            }
+        });
     }
 
     public static interface MyOnClickListener{
@@ -163,52 +165,6 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
     @Override
     public int getItemCount() {
         return matterList.getCount();
-    }
-
-    private class TimeThread extends Thread {
-
-        private final Object lock = new Object();
-
-        private boolean pause = false;
-
-        void pauseThread(){
-            pause = true;
-        }
-
-        void resumeThread(){
-            pause =false;
-            synchronized (lock){
-                lock.notify();
-            }
-        }
-
-        void onPause() {
-            synchronized (lock) {
-                try {
-                    lock.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            do {
-                while (pause){
-                    onPause();
-                }
-                try {
-                    Message msg = new Message();
-                    msg.what = 1;  //消息(一个整型值)
-                    mHandler.sendMessage(msg);// 每隔1秒发送一个msg给mHandler
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while (true);
-        }
     }
 
     public String convertDateToString(Date date){

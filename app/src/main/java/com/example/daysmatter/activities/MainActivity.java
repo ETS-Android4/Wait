@@ -65,6 +65,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import info.hoang8f.widget.FButton;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
@@ -420,6 +421,14 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
         CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
         ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
+        FButton cardContent_btn = layout.findViewById(R.id.cardContent_btn);
+
+        cardContent_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override

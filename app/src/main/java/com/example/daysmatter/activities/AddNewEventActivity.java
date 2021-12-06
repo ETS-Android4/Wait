@@ -1,5 +1,6 @@
 package com.example.daysmatter.activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -60,6 +61,8 @@ public class AddNewEventActivity extends AppCompatActivity {
     public static final int PICK_PHOTO = 102;
     private static MatterList sMatterList;
     private String imageSourcePath;
+
+    private static final int REQUEST_PERMISSION_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,21 +224,32 @@ public class AddNewEventActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(AddNewEventActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
-        } else {
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
+                "ohos.permission.WRITE_USER_STORAGE") != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AddNewEventActivity.this,
+                    new String[]{"ohos.permission.WRITE_USER_STORAGE"}, REQUEST_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(AddNewEventActivity.this,
+                "ohos.permission.WRITE_USER_STORAGE") == PackageManager.PERMISSION_GRANTED){
             // open the album
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             // Intent.ACTION_GET_CONTENT = "android.intent.action.GET_CONTENT"
             intent.setType("image/*");
-            AddNewEventActivity.this.startActivityForResult(intent, PICK_PHOTO); // 打开相册
+            AddNewEventActivity.this.startActivityForResult(intent, REQUEST_PERMISSION_CODE); // 打开相册
+        }else if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
+                "ohos.permission.WRITE_USER_STORAGE") == PackageManager.PERMISSION_GRANTED){
         }
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case PICK_PHOTO:
+            case REQUEST_PERMISSION_CODE:
                 if (resultCode == RESULT_OK) { // 判断手机系统版本号
                     if (Build.VERSION.SDK_INT >= 19) {
                         // 4.4及以上系统使用这个方法处理图片

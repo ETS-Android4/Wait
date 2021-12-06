@@ -21,7 +21,7 @@
             app:expandedTitleMarginEnd="60dp"
             app:expandedTitleMarginStart="72dp"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-            app:title="创\t建\t事\t件">
+            app:title="编\t辑\t事\t件">
 
             <pl.droidsonroids.gif.GifImageView
                 android:layout_width="match_parent"
@@ -90,7 +90,7 @@
                     app:met_floatingLabel="normal"
                     app:met_minCharacters="1"
                     app:met_maxCharacters="20"
-                    app:met_helperText="它一定很重要  "
+                    app:met_helperText="它一定很重要"
                     app:met_hideUnderline="true">
                 </com.rengwuxian.materialedittext.MaterialEditText>
             </LinearLayout>
