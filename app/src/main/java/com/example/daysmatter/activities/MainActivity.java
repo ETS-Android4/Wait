@@ -57,7 +57,6 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 public class MainActivity extends AppCompatActivity implements MattersRVAdapter.MyOnLongClickListener, MattersRVAdapter.MyOnClickListener{
 
     private LinearLayout main_LL1;
-    private NestedScrollView main_NSV;
     private LinearLayout main_LL2;
     private LinearLayout mainOwner_LL;
     private LinearLayout mainTime_LL;
@@ -101,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
 
         main_LL1 = findViewById(R.id.main_LL1);
-        main_NSV = findViewById(R.id.main_NSV);
         main_LL2 = findViewById(R.id.main_LL2);
         mainOwner_LL = findViewById(R.id.mainOwner_LL);
         mainTime_LL = findViewById(R.id.mainTime_LL);
@@ -240,10 +238,6 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         // place the time information in the middle of the screen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) main_NSV.getLayoutParams();
-        p.setMargins(0, 0, 0, 0);
-        main_NSV.requestLayout();
-
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         layoutParams.gravity = Gravity.CENTER;
         main_LL1.setLayoutParams(layoutParams);
@@ -267,10 +261,6 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
 
     public void setPortraitAttr(){
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) main_NSV.getLayoutParams();
-        p.setMargins(0, 0, 0, 200);
-        main_NSV.requestLayout();
 
         FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         frameLayoutParams.gravity = Gravity.TOP;
@@ -335,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
             @Override
             public boolean canScrollVertically() {
                 //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
-                return false;
+                return true;
             }
         };
         mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
