@@ -46,7 +46,12 @@ import com.hanks.htextview.evaporate.EvaporateTextView;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 
 public class MainActivity extends AppCompatActivity implements MattersRVAdapter.MyOnLongClickListener, MattersRVAdapter.MyOnClickListener{
@@ -117,21 +122,11 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
 
         setMattersView();
 
-//        if (mattersRVAdapter != null) {
-//            mattersRVAdapter.setOnLongClickListener(new MattersRVAdapter.MyOnLongClickListener() {
-//                @Override
-//                public void OnItemLongClickListener(View view, int position) {
-//                    Toast.makeText(MainActivity.this,"你长按了"+position,Toast.LENGTH_SHORT).show();
-//                    matterOnLongClickDialog();
-//                }
-//            });
-//        }
-
         addMatter_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, AddNewEventActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddNewEventActivity.class);
+                intent.putExtra("matterList", matterList);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -312,19 +307,24 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         super.onStop();
         timeThread.pauseThread();
     }
-    x
+
     @Override
     protected void onResume() {
         super.onResume();
         timeThread.resumeThread();
 
-//         TODO: Make the Adapter notify more reasonable
+//      TODO: Make the Adapter notify more reasonable
         matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
+//        if (!new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class)).equals(matterList)){
+//            mattersRVAdapter.notifyItemInserted(matterList.getCount());
+//        }
         mattersRVAdapter = new MattersRVAdapter(matterList, this, this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
     public void setMattersView(){
+        mainMatters_recyclerView.setItemAnimator(new LandingAnimator());
+
         matterList = new MatterList(dbMatterList);
         if (dbMatterList.size() > 0){
             mainNoMatter_LL.setVisibility(View.GONE);
@@ -374,8 +374,9 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
             public void onClick(View v) {
                 LitePal.deleteAll(Matter.class,"title=?",matterList.getMatter(positionOnClick).getTitle());
                 matterList.deleteMatter(matterList.getMatter(positionOnClick));
-                mattersRVAdapter.notifyDataSetChanged();
+//                mattersRVAdapter.notifyDataSetChanged();
                 dialog.dismiss();
+                mattersRVAdapter.notifyItemRemoved(positionOnClick);
             }
         });
 
@@ -391,9 +392,9 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         int displayWidth = dm.widthPixels;
         int displayHeight = dm.heightPixels;
         android.view.WindowManager.LayoutParams p = dialog.getWindow().getAttributes();  //获取对话框当前的参数值
-        p.width = (int) (displayWidth * 0.55);    //宽度设置为屏幕的0.5
-        p.height = (int) (displayHeight * 0.28);    //宽度设置为屏幕的0.5
-        dialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+        p.width = (int) (displayWidth * 0.75);    //宽度设置为屏幕的0.5
+        p.height = (int) (displayHeight * 0.20);    //宽度设置为屏幕的0.5
+        dialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
         dialog.getWindow().setAttributes(p);     //设置生效
     }
 }

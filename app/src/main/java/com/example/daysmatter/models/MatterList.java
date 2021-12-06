@@ -53,7 +53,7 @@ public class MatterList extends LitePalSupport implements Serializable {
                 return matter;
             }
         }
-        throw new Exception("Habit does not exist");
+        throw new Exception("Matter does not exist");
     }
 
     /**
@@ -68,7 +68,12 @@ public class MatterList extends LitePalSupport implements Serializable {
      * @param matter The habit to search for in the list
      */
     public Boolean hasMatter(Matter matter) {
-        return matterList.contains(matter);
+        for (int i = 0; i < matterList.size(); i++){
+            if (matter.getTitle().equals(matterList.get(i).getTitle())){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

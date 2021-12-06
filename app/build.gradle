@@ -61,4 +61,7 @@ dependencies {
 
     // use litepal
     implementation 'org.litepal.guolindev:core:3.2.3'
+
+    // recycleView animation kotlin
+    implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 }
