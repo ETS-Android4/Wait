@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.dmallcott.dismissibleimageview.DismissibleImageView;
 import com.example.daysmatter.R;
 import com.example.daysmatter.models.Matter;
+import com.example.daysmatter.models.MatterList;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
@@ -54,7 +55,7 @@ public class AddNewEventActivity extends AppCompatActivity {
 
     private Date selectedDate;
     public static final int PICK_PHOTO = 102;
-    private static ArrayList<Matter> sMatterList = new ArrayList<>();
+    private static MatterList sMatterList;
     private String imageSourcePath;
 
     @Override
@@ -62,6 +63,9 @@ public class AddNewEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Objects.requireNonNull(getSupportActionBar()).hide();
         setContentView(R.layout.activity_add_new_event);
+
+        Intent intent = getIntent();
+        sMatterList = (MatterList) intent.getSerializableExtra("matterList");
 
         baseInit();
     }
@@ -263,24 +267,23 @@ public class AddNewEventActivity extends AppCompatActivity {
 
     public void saveEvent(){
         Matter matter = new Matter();
-        if (Objects.requireNonNull(addEventTitle_editText.getText()).toString().length() > 0){
+        if (Objects.requireNonNull(addEventTitle_editText.getText()).toString().length() > 0 &&
+                Objects.requireNonNull(addEventPickDate_editText.getText()).length() > 0){
             matter.setTitle(Objects.requireNonNull(addEventTitle_editText.getText()).toString());
             matter.setTargetDate(selectedDate);
             matter.setImagePath(imageSourcePath);
             boolean success = matter.save();
             if (success) {
-                sMatterList.add(matter);
+                sMatterList.addMatter(matter);
                 Toast.makeText(AddNewEventActivity.this, "事件保存成功!", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(AddNewEventActivity.this, "事件保存失败!", Toast.LENGTH_SHORT).show();
+                if (sMatterList.hasMatter(matter)){
+                    Toast.makeText(AddNewEventActivity.this, "事件已经存在!", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(AddNewEventActivity.this, "事件保存失败!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
-    }
-
-    public static void actionStart(Context context, ArrayList<Matter> matterList) {
-        Intent i = new Intent(context, AddNewEventActivity.class);
-        sMatterList = matterList;
-        context.startActivity(i);
     }
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardContentCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="12dp"
+        app:cardElevation="100dp"
+        app:cardCornerRadius="20dp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="start"
+            android:layout_marginTop="24sp"
+            android:layout_marginBottom="24sp">
+
+            <TextView
+                android:id="@+id/cardContentTitle_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginStart="24sp">
+            </TextView>
+
+            <TextView
+                android:id="@+id/cardContentTime_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="time"
+                android:textSize="24sp"
+                android:layout_marginStart="24sp"
+                android:layout_marginTop="3sp">
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="end"
+            android:layout_marginEnd="24sp"
+            android:layout_marginTop="30sp"
+            android:layout_marginBottom="30sp">
+
+            <TextView
+                android:id="@+id/cardContentDays_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="days"
+                android:textSize="36sp"
+                android:textStyle="bold">
+            </TextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="天"
+                android:textSize="24sp"
+                android:layout_marginStart="6sp">
+            </TextView>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

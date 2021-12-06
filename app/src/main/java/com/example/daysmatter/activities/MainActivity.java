@@ -1,9 +1,12 @@
 package com.example.daysmatter.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -11,34 +14,47 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.daysmatter.R;
+import com.example.daysmatter.adapters.MattersRVAdapter;
 import com.example.daysmatter.models.Matter;
+import com.example.daysmatter.models.MatterList;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hanks.htextview.evaporate.EvaporateTextView;
 
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements MattersRVAdapter.MyOnLongClickListener, MattersRVAdapter.MyOnClickListener{
 
     private LinearLayout main_LL1;
     private LinearLayout main_LL2;
@@ -59,12 +75,15 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton addMatter_fab;
     private LinearLayout mainNoMatter_LL;
     private RecyclerView mainMatters_recyclerView;
+    private MattersRVAdapter mattersRVAdapter;
     private TimeThread timeThread;
 
     //在主线程里面处理消息并更新UI界面
     private Handler mHandler;
 
     private ArrayList<Matter> dbMatterList;
+    private MatterList matterList;
+    private int positionOnClick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
     private void baseInit(){
         //deal with database
         SQLiteDatabase db = LitePal.getDatabase();
-
         dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
 
         main_LL1 = findViewById(R.id.main_LL1);
@@ -99,13 +117,14 @@ public class MainActivity extends AppCompatActivity {
         mainMatters_recyclerView = findViewById(R.id.mainMatters_recyclerView);
 
         adjustHeaderTexts();
+
         setMattersView();
 
         addMatter_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, AddNewEventActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddNewEventActivity.class);
+                intent.putExtra("matterList", matterList);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -283,13 +302,89 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         timeThread.resumeThread();
+
+//      TODO: Make the Adapter notify more reasonable
+        matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
+//        if (!new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class)).equals(matterList)){
+//            mattersRVAdapter.notifyItemInserted(matterList.getCount());
+//        }
+        mattersRVAdapter = new MattersRVAdapter(matterList, this, this);
+        mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
     public void setMattersView(){
+        mainMatters_recyclerView.setItemAnimator(new LandingAnimator());
+
+        matterList = new MatterList(dbMatterList);
         if (dbMatterList.size() > 0){
             mainNoMatter_LL.setVisibility(View.GONE);
         }else {
             mainNoMatter_LL.setVisibility(View.VISIBLE);
         }
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false){
+            @Override
+            public boolean canScrollVertically() {
+                //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
+                return true;
+            }
+        };
+        mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
+        mattersRVAdapter = new MattersRVAdapter(matterList,this,this);
+        mainMatters_recyclerView.setAdapter(mattersRVAdapter);
+    }
+
+    @Override
+    public void OnItemClickListener(View view, int position) {
+        positionOnClick = position;
+        Log.d("MAIN", position + " item clicked");
+    }
+
+    @Override
+    public void OnItemLongClickListener(View view, int position) {
+        positionOnClick = position;
+        Log.d("MAIN", position + " item long clicked");
+        matterOnLongClickDialog();
+    }
+
+    public void matterOnLongClickDialog(){
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_message, null);
+        TextView confirm;    //确定按钮
+        final TextView content;    //内容
+        final TextView cancel;
+        confirm = (TextView) view.findViewById(R.id.dialog_btn_comfirm);
+        cancel = (TextView) view.findViewById(R.id.dialog_btn_cancel);
+        content = (TextView) view.findViewById(R.id.dialog_txt_content);
+        final Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setContentView(view);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onClick(View v) {
+                LitePal.deleteAll(Matter.class,"title=?",matterList.getMatter(positionOnClick).getTitle());
+                matterList.deleteMatter(matterList.getMatter(positionOnClick));
+//                mattersRVAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+                mattersRVAdapter.notifyItemRemoved(positionOnClick);
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        DisplayMetrics dm = MainActivity.this.getResources().getDisplayMetrics();
+        int displayWidth = dm.widthPixels;
+        int displayHeight = dm.heightPixels;
+        android.view.WindowManager.LayoutParams p = dialog.getWindow().getAttributes();  //获取对话框当前的参数值
+        p.width = (int) (displayWidth * 0.75);    //宽度设置为屏幕的0.5
+        p.height = (int) (displayHeight * 0.20);    //宽度设置为屏幕的0.5
+        dialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        dialog.getWindow().setAttributes(p);     //设置生效
     }
 }
