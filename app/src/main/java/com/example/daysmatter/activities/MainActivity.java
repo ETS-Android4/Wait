@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         // place the time information in the middle of the screen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         main_LL1.setLayoutParams(layoutParams);
         main_LL2.setVisibility(View.GONE);
@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
     public void setPortraitAttr(){
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         frameLayoutParams.gravity = Gravity.TOP;
         main_LL1.setLayoutParams(frameLayoutParams);
         main_LL2.setVisibility(View.VISIBLE);
