@@ -3,6 +3,8 @@ package com.example.daysmatter.adapters;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +33,7 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
 
     private MyOnLongClickListener myOnLongClickListener;
     private MyOnClickListener myOnClickListener;
+    private Handler mHandler;
 
 
     /**
@@ -44,14 +47,10 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         TextView cardContentTime_textView;
         TextView cardContentDays_textView;
         ImageView cardContentBG_imageView;
-        EvaporateTextView cardTimeHour_customTextView;
-        EvaporateTextView cardTimeMinute_customTextView;
-        EvaporateTextView cardTimeSecond_customTextView;
 
         MyOnLongClickListener myOnLongClickListener;
         MyOnClickListener myOnClickListener;
 
-        private boolean status = false;
 
         public ViewHolder(View view, MyOnClickListener myOnClickListener, MyOnLongClickListener myOnLongClickListener) {
             super(view);
@@ -61,9 +60,6 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
             cardContentTime_textView = view.findViewById(R.id.cardContentTime_textView);
             cardContentDays_textView = view.findViewById(R.id.cardContentDays_textView);
             cardContentBG_imageView = view.findViewById(R.id.cardContentBG_imageView);
-            cardTimeHour_customTextView = view.findViewById(R.id.cardTimeHour_customTextView);
-            cardTimeMinute_customTextView = view.findViewById(R.id.cardTimeMinute_customTextView);
-            cardTimeSecond_customTextView = view.findViewById(R.id.cardTimeSecond_customTextView);
 
             this.myOnClickListener = myOnClickListener;
             this.myOnLongClickListener = myOnLongClickListener;
@@ -167,6 +163,52 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
     @Override
     public int getItemCount() {
         return matterList.getCount();
+    }
+
+    private class TimeThread extends Thread {
+
+        private final Object lock = new Object();
+
+        private boolean pause = false;
+
+        void pauseThread(){
+            pause = true;
+        }
+
+        void resumeThread(){
+            pause =false;
+            synchronized (lock){
+                lock.notify();
+            }
+        }
+
+        void onPause() {
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            do {
+                while (pause){
+                    onPause();
+                }
+                try {
+                    Message msg = new Message();
+                    msg.what = 1;  //消息(一个整型值)
+                    mHandler.sendMessage(msg);// 每隔1秒发送一个msg给mHandler
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (true);
+        }
     }
 
     public String convertDateToString(Date date){

@@ -192,7 +192,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:edge_width="10dp"
-                app:edge_position="bottom">
+                app:edge_position="top|bottom">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/mainMatters_recyclerView"

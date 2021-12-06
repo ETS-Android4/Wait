@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginVertical="12dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardContentCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="12dp"
+
         app:cardElevation="100dp"
         app:cardCornerRadius="20dp">
 
@@ -59,64 +61,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="3sp"
+                    android:layout_marginTop="24sp"
                     android:layout_marginStart="24sp"
                     android:visibility="gone">
 
-                    <com.hanks.htextview.evaporate.EvaporateTextView
-                        android:id="@+id/cardTimeHour_customTextView"
+                    <info.hoang8f.widget.FButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingTop="6dp"
-                        android:text="00"
+                        android:text="编辑"
                         android:textColor="@color/black"
-                        android:textSize="36sp"
-                        android:textStyle="bold">
-                    </com.hanks.htextview.evaporate.EvaporateTextView>
-
-                    <TextView
-                        android:id="@+id/cardTimeColon1_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="3dp"
-                        android:text=":"
-                        android:textColor="@color/black"
-                        android:textSize="36sp">
-                    </TextView>
-
-                    <com.hanks.htextview.evaporate.EvaporateTextView
-                        android:id="@+id/cardTimeMinute_customTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="6dp"
-                        android:text="00"
-                        android:textColor="@color/black"
-                        android:textSize="36sp"
-                        android:textStyle="bold">
-                    </com.hanks.htextview.evaporate.EvaporateTextView>
-
-                    <TextView
-                        android:id="@+id/cardTimeColon2_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="3dp"
-                        android:text=":"
-                        android:textColor="@color/black"
-                        android:textSize="36sp">
-                    </TextView>
-
-                    <com.hanks.htextview.evaporate.EvaporateTextView
-                        android:id="@+id/cardTimeSecond_customTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="6dp"
-                        android:text="00"
-                        android:textColor="@color/black"
-                        android:textSize="36sp"
-                        android:textStyle="bold">
-                    </com.hanks.htextview.evaporate.EvaporateTextView>
+                        android:textSize="18sp"
+                        fbutton:buttonColor="@color/white">
+                    </info.hoang8f.widget.FButton>
                 </LinearLayout>
             </LinearLayout>
 

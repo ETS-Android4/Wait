@@ -10,10 +10,22 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
+import android.transition.AutoTransition;
+import android.transition.ChangeBounds;
+import android.transition.ChangeClipBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeScroll;
+import android.transition.ChangeTransform;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -91,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
     private ArrayList<Matter> dbMatterList;
     private MatterList matterList;
     private int positionOnClick;
-    private boolean isExpanded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -406,83 +418,29 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
     public void setExpandedCards(View view, int position){
         FrameLayout layout = (FrameLayout) mainMatters_recyclerView.getChildAt(position);
         LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
-        EvaporateTextView cardTimeHour_customTextView = layout.findViewById(R.id.cardTimeHour_customTextView);
-        EvaporateTextView cardTimeMinute_customTextView = layout.findViewById(R.id.cardTimeMinute_customTextView);
-        EvaporateTextView cardTimeSecond_customTextView = layout.findViewById(R.id.cardTimeSecond_customTextView);
-        TextView cardContentTitle_textView = layout.findViewById(R.id.cardContentTitle_textView);
         CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
         ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
 
-        if (!isExpanded) {
-            cardContentCardView.post(new Runnable() {
-                @Override
-                public void run() {
-                    int height = cardContentCardView.getHeight();
-                    ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-                    layoutParams.height = (int)(height * 1.6);
+        layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+                if ((bottom - top) > (oldBottom - oldTop)) {
+                    layoutParams.height = bottom - top;
                     cardContentBG_imageView.setLayoutParams(layoutParams);
                 }
-            });
-            linearLayout.setVisibility(View.VISIBLE);
+            }
+        });
 
-//            timeThread.pauseThread();
-//            mHandler = new Handler() {
-//                @Override
-//                public void handleMessage(Message msg) {
-//                    super.handleMessage(msg);
-//                    switch (msg.what) {
-//                        case 1:
-//                            long sysTime = System.currentTimeMillis();//获取系统时间
-//                            sysTimeHourStr = DateFormat.format("hh", sysTime);//时间显示格式
-//                            sysTimeMinuteStr = DateFormat.format("mm", sysTime);//时间显示格式
-//                            sysTimeSecondStr = DateFormat.format("ss", sysTime);//时间显示格式
-//
-////                            mainTimeHour_customTextView.animateText(sysTimeHourStr); //更新时间
-////                            mainTimeMinute_customTextView.animateText(sysTimeMinuteStr); //更新时间
-////                            mainTimeSecond_customTextView.animateText(sysTimeSecondStr); //更新时间
-//
-//                            Date tDate = matterList.getMatter(position).getTargetDate();
-//                            long tTime = tDate.getTime();
-//
-//                            // TODO: 以后写正数日时删除
-//                            if (tTime <= sysTime) {
-//                                return;
-//                            }
-//
-//                            int day = 0, hour = 0, minute = 0, second = 0;
-//                            // 如果target time大于sys time的话
-//                            if (tTime > sysTime) {
-//                                String restTime = millisToStringShort(tTime - sysTime);
-//                                String[] rest = restTime.split("-");
-//                                day = Integer.parseInt(rest[0]);
-//                                hour = Integer.parseInt(rest[1]);
-//                                minute = Integer.parseInt(rest[2]);
-//                                second = Integer.parseInt(rest[3]);
-//                            }
-//                            cardTimeHour_customTextView.animateText(String.valueOf(hour));
-//                            mainTimeMinute_customTextView.animateText(String.valueOf(minute));
-//                            mainTimeSecond_customTextView.animateText(String.valueOf(second));
-//                            break;
-//                        default:
-//                            break;
-//
-//                    }
-//                }
-//            };
-            timeThread.resumeThread();
-            isExpanded = true;
+        if (linearLayout.getVisibility() == View.GONE) {
+            TransitionManager.beginDelayedTransition(cardContentCardView, new AutoTransition());
+            linearLayout.setVisibility(View.VISIBLE);
         }else{
-            cardContentBG_imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    int height = cardContentBG_imageView.getHeight();
-                    ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-                    layoutParams.height = (int)(height / 1.6);
-                    cardContentBG_imageView.setLayoutParams(layoutParams);
-                }
-            });
+            TransitionManager.beginDelayedTransition(cardContentCardView, new TransitionSet().addTransition(new ChangeImageTransform()));
             linearLayout.setVisibility(View.GONE);
-            isExpanded = false;
+            ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+            layoutParams.height = 300;
+            cardContentBG_imageView.setLayoutParams(layoutParams);
         }
     }
 
