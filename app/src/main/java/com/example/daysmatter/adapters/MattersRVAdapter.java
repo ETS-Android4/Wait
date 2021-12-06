@@ -1,22 +1,29 @@
 package com.example.daysmatter.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.daysmatter.R;
 import com.example.daysmatter.models.Matter;
 import com.example.daysmatter.models.MatterList;
+import com.hanks.htextview.evaporate.EvaporateTextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.ViewHolder> {
 
@@ -32,13 +39,19 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
      */
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
-        View cardContentCardView;
+        CardView cardContentCardView;
         TextView cardContentTitle_textView;
         TextView cardContentTime_textView;
         TextView cardContentDays_textView;
+        ImageView cardContentBG_imageView;
+        EvaporateTextView cardTimeHour_customTextView;
+        EvaporateTextView cardTimeMinute_customTextView;
+        EvaporateTextView cardTimeSecond_customTextView;
 
         MyOnLongClickListener myOnLongClickListener;
         MyOnClickListener myOnClickListener;
+
+        private boolean status = false;
 
         public ViewHolder(View view, MyOnClickListener myOnClickListener, MyOnLongClickListener myOnLongClickListener) {
             super(view);
@@ -47,10 +60,13 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
             cardContentTitle_textView = view.findViewById(R.id.cardContentTitle_textView);
             cardContentTime_textView = view.findViewById(R.id.cardContentTime_textView);
             cardContentDays_textView = view.findViewById(R.id.cardContentDays_textView);
+            cardContentBG_imageView = view.findViewById(R.id.cardContentBG_imageView);
+            cardTimeHour_customTextView = view.findViewById(R.id.cardTimeHour_customTextView);
+            cardTimeMinute_customTextView = view.findViewById(R.id.cardTimeMinute_customTextView);
+            cardTimeSecond_customTextView = view.findViewById(R.id.cardTimeSecond_customTextView);
 
             this.myOnClickListener = myOnClickListener;
             this.myOnLongClickListener = myOnLongClickListener;
-
 
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
@@ -104,6 +120,15 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
                 .inflate(R.layout.content_matter_cardview, viewGroup, false);
         final ViewHolder viewHolder = new ViewHolder(view, myOnClickListener, myOnLongClickListener);
 
+        viewHolder.cardContentCardView.post(new Runnable() {
+            @Override
+            public void run() {
+                int height = viewHolder.cardContentCardView.getHeight();
+                ViewGroup.LayoutParams layoutParams = viewHolder.cardContentBG_imageView.getLayoutParams();
+                layoutParams.height = height;
+                viewHolder.cardContentBG_imageView.setLayoutParams(layoutParams);
+            }
+        });
         return viewHolder;
     }
 
@@ -112,9 +137,23 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         //根据position将每一个list里面的值绑定到viewholder
         Matter matter = matterList.getMatter(position);
+
+//        String title = matter.getTitle();
+//        StringBuffer titleAltered = new StringBuffer();
+//        for (int i = 0; i < title.length(); i++){
+//            titleAltered.append(title.charAt(i));
+//            if (i != title.length()-1)
+//                titleAltered.append(" ");
+//        }
         viewHolder.cardContentTitle_textView.setText(matter.getTitle());
         viewHolder.cardContentTime_textView.setText(convertDateToString(matter.getTargetDate()));
         viewHolder.cardContentDays_textView.setText(getRemainedDays(matter.getTargetDate()));
+        try {
+            File file=new File(matter.getImagePath());
+            viewHolder.cardContentBG_imageView.setImageURI(Uri.fromFile(file));
+        }catch (NullPointerException e){
+            setDefaultImage(viewHolder);
+        }
     }
 
     public static interface MyOnClickListener{
@@ -139,5 +178,44 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         Date dateNow = new Date();
         long difference =  (date.getTime() - dateNow.getTime()) / 86400000;
         return String.valueOf(Math.abs(difference));
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void setDefaultImage(ViewHolder viewHolder){
+        int start=1;
+        int end=10;
+        int rand = new Random().nextInt(end - start + 1) + start;
+        switch (rand){
+            case 1:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_1));
+                break;
+            case 2:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_2));
+                break;
+            case 3:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_3));
+                break;
+            case 4:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_4));
+                break;
+            case 5:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_5));
+                break;
+            case 6:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_6));
+                break;
+            case 7:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_7));
+                break;
+            case 8:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_8));
+                break;
+            case 9:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_9));
+                break;
+            case 10:
+                viewHolder.cardContentBG_imageView.setImageDrawable(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.wallhaven_10));
+                break;
+        }
     }
 }

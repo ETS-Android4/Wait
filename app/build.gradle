@@ -64,4 +64,7 @@ dependencies {
 
     // recycleView animation kotlin
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
+
+    // view edge transparent
+    implementation 'ren.qinc.edgetranslucent:lib:0.0.3'
 }

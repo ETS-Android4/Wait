@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,9 +48,14 @@ import com.hanks.htextview.evaporate.EvaporateTextView;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInLeftAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -84,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
     private ArrayList<Matter> dbMatterList;
     private MatterList matterList;
     private int positionOnClick;
+    private boolean isExpanded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -305,10 +313,12 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
 
 //      TODO: Make the Adapter notify more reasonable
         matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
-//        if (!new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class)).equals(matterList)){
-//            mattersRVAdapter.notifyItemInserted(matterList.getCount());
-//        }
-        mattersRVAdapter = new MattersRVAdapter(matterList, this, this);
+        if (matterList.getCount() > 0){
+            mainNoMatter_LL.setVisibility(View.GONE);
+        }else {
+            mainNoMatter_LL.setVisibility(View.VISIBLE);
+        }
+        mattersRVAdapter = new MattersRVAdapter(matterList,this,this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
@@ -337,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
     public void OnItemClickListener(View view, int position) {
         positionOnClick = position;
         Log.d("MAIN", position + " item clicked");
+        setExpandedCards(view, position);
     }
 
     @Override
@@ -367,6 +378,9 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
 //                mattersRVAdapter.notifyDataSetChanged();
                 dialog.dismiss();
                 mattersRVAdapter.notifyItemRemoved(positionOnClick);
+                if (matterList.getCount() == 0) {
+                    mainNoMatter_LL.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -386,5 +400,135 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         p.height = (int) (displayHeight * 0.20);    //宽度设置为屏幕的0.5
         dialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
         dialog.getWindow().setAttributes(p);     //设置生效
+    }
+
+    @SuppressLint("HandlerLeak")
+    public void setExpandedCards(View view, int position){
+        FrameLayout layout = (FrameLayout) mainMatters_recyclerView.getChildAt(position);
+        LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
+        EvaporateTextView cardTimeHour_customTextView = layout.findViewById(R.id.cardTimeHour_customTextView);
+        EvaporateTextView cardTimeMinute_customTextView = layout.findViewById(R.id.cardTimeMinute_customTextView);
+        EvaporateTextView cardTimeSecond_customTextView = layout.findViewById(R.id.cardTimeSecond_customTextView);
+        TextView cardContentTitle_textView = layout.findViewById(R.id.cardContentTitle_textView);
+        CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
+        ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
+
+        if (!isExpanded) {
+            cardContentCardView.post(new Runnable() {
+                @Override
+                public void run() {
+                    int height = cardContentCardView.getHeight();
+                    ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+                    layoutParams.height = (int)(height * 1.6);
+                    cardContentBG_imageView.setLayoutParams(layoutParams);
+                }
+            });
+            linearLayout.setVisibility(View.VISIBLE);
+
+//            timeThread.pauseThread();
+//            mHandler = new Handler() {
+//                @Override
+//                public void handleMessage(Message msg) {
+//                    super.handleMessage(msg);
+//                    switch (msg.what) {
+//                        case 1:
+//                            long sysTime = System.currentTimeMillis();//获取系统时间
+//                            sysTimeHourStr = DateFormat.format("hh", sysTime);//时间显示格式
+//                            sysTimeMinuteStr = DateFormat.format("mm", sysTime);//时间显示格式
+//                            sysTimeSecondStr = DateFormat.format("ss", sysTime);//时间显示格式
+//
+////                            mainTimeHour_customTextView.animateText(sysTimeHourStr); //更新时间
+////                            mainTimeMinute_customTextView.animateText(sysTimeMinuteStr); //更新时间
+////                            mainTimeSecond_customTextView.animateText(sysTimeSecondStr); //更新时间
+//
+//                            Date tDate = matterList.getMatter(position).getTargetDate();
+//                            long tTime = tDate.getTime();
+//
+//                            // TODO: 以后写正数日时删除
+//                            if (tTime <= sysTime) {
+//                                return;
+//                            }
+//
+//                            int day = 0, hour = 0, minute = 0, second = 0;
+//                            // 如果target time大于sys time的话
+//                            if (tTime > sysTime) {
+//                                String restTime = millisToStringShort(tTime - sysTime);
+//                                String[] rest = restTime.split("-");
+//                                day = Integer.parseInt(rest[0]);
+//                                hour = Integer.parseInt(rest[1]);
+//                                minute = Integer.parseInt(rest[2]);
+//                                second = Integer.parseInt(rest[3]);
+//                            }
+//                            cardTimeHour_customTextView.animateText(String.valueOf(hour));
+//                            mainTimeMinute_customTextView.animateText(String.valueOf(minute));
+//                            mainTimeSecond_customTextView.animateText(String.valueOf(second));
+//                            break;
+//                        default:
+//                            break;
+//
+//                    }
+//                }
+//            };
+            timeThread.resumeThread();
+            isExpanded = true;
+        }else{
+            cardContentBG_imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    int height = cardContentBG_imageView.getHeight();
+                    ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+                    layoutParams.height = (int)(height / 1.6);
+                    cardContentBG_imageView.setLayoutParams(layoutParams);
+                }
+            });
+            linearLayout.setVisibility(View.GONE);
+            isExpanded = false;
+        }
+    }
+
+
+    /**
+     * 把毫秒数转换成天时分秒
+     * @param millis
+     * @return 格式为 dd-hh-mm-ss
+     */
+    public static String millisToStringShort(long millis) {
+        StringBuilder strBuilder = new StringBuilder();
+        long temp = millis;
+        long dper = 24 * 60 * 60 * 1000;
+        long hper = 60 * 60 * 1000;
+        long mper = 60 * 1000;
+        long sper = 1000;
+        if (temp / dper > 0) {
+            // 小时
+            strBuilder.append(temp / dper).append("-");
+        }else{
+            strBuilder.append("0").append("-");
+        }
+        temp = temp % dper;
+
+        if (temp / hper > 0) {
+            // 小时
+            strBuilder.append(temp / hper).append("-");
+        }else{
+            strBuilder.append("0").append("-");
+        }
+        temp = temp % hper;
+
+        if (temp / mper > 0) {
+            // 分钟
+            strBuilder.append(temp / mper).append("-");
+        }else{
+            strBuilder.append("0").append("-");
+        }
+        temp = temp % mper;
+
+        if (temp / sper > 0) {
+            // 秒
+            strBuilder.append(temp / sper);
+        }else{
+            strBuilder.append("0");
+        }
+        return strBuilder.toString();
     }
 }
