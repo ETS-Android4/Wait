@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -41,6 +42,10 @@ import com.example.daysmatter.models.MatterList;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
+import org.litepal.LitePal;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -59,8 +64,10 @@ public class AddNewEventActivity extends AppCompatActivity {
 
     private Date selectedDate;
     public static final int PICK_PHOTO = 102;
-    private static MatterList sMatterList;
-    private String imageSourcePath;
+    private MatterList sMatterList;
+    private MatterList sMatterListAdapter;
+    private Matter sMatter;
+    private String imageSourcePath = null;
 
     private static final int REQUEST_PERMISSION_CODE = 1;
 
@@ -72,11 +79,18 @@ public class AddNewEventActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         sMatterList = (MatterList) intent.getSerializableExtra("matterList");
+        sMatter = (Matter) intent.getSerializableExtra("matter");
 
         baseInit();
+
+        if (sMatter != null){
+            updateAttr();
+        }
     }
 
     public void baseInit(){
+        SQLiteDatabase db = LitePal.getDatabase();
+
         addEventBack_imageView = findViewById(R.id.addEventBack_imageView);
         addEventTitle_editText = findViewById(R.id.addEventTitle_editText);
         addEventPickDate_editText = findViewById(R.id.addEventPickDate_editText);
@@ -111,6 +125,7 @@ public class AddNewEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addEventPhoto_imageView.setImageDrawable(null);
+                imageSourcePath = null;
             }
         });
 
@@ -118,7 +133,11 @@ public class AddNewEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addEventPickDate_editText.validateWith(new RegexpValidator("日期为必填项", "^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]))$"));
-                saveEvent();
+                if (sMatter == null) {
+                    saveEvent();
+                }else{
+                    updateEvent();
+                }
             }
         });
     }
@@ -328,6 +347,18 @@ public class AddNewEventActivity extends AppCompatActivity {
         }
     }
 
+    public void updateAttr(){
+        addEventTitle_editText.setText(sMatter.getTitle());
+        selectedDate = sMatter.getTargetDate();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        addEventPickDate_editText.setText(sdf.format(selectedDate));
+        try {
+            File file = new File(sMatter.getImagePath());
+            addEventPhoto_imageView.setImageURI(Uri.fromFile(file));
+        }catch (NullPointerException e){
+        }
+    }
+
     public void saveEvent(){
         Matter matter = new Matter();
         if (Objects.requireNonNull(addEventTitle_editText.getText()).toString().length() > 0 &&
@@ -347,6 +378,26 @@ public class AddNewEventActivity extends AppCompatActivity {
                     Toast.makeText(AddNewEventActivity.this, "事件保存失败!", Toast.LENGTH_SHORT).show();
                 }
             }
+        }
+    }
+
+    public void updateEvent(){
+        Matter matter = new Matter();
+        if (Objects.requireNonNull(addEventTitle_editText.getText()).toString().length() > 0 &&
+                Objects.requireNonNull(addEventPickDate_editText.getText()).length() > 0) {
+            matter.setTitle(Objects.requireNonNull(addEventTitle_editText.getText()).toString());
+            matter.setTargetDate(selectedDate);
+            matter.setImagePath(imageSourcePath);
+                if (imageSourcePath == null){
+                    matter.setToDefault("imagePath");
+                }
+                int affectedRows = matter.updateAll("title = ?", sMatter.getTitle());
+                if (affectedRows == 1){
+                    Toast.makeText(AddNewEventActivity.this, "事件保存成功!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }else {
+                    Toast.makeText(AddNewEventActivity.this, "事件保存失败!", Toast.LENGTH_SHORT).show();
+                }
         }
     }
 }

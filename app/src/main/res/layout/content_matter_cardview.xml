@@ -24,6 +24,8 @@
                 android:layout_height="0dp"
                 android:alpha="0.5"
                 android:scaleType="centerCrop"
+                android:clickable="false"
+                android:focusable="false"
                 android:src="@drawable/wallhaven_2">
             </ImageView>
 
@@ -71,8 +73,8 @@
                         android:layout_height="wrap_content"
                         android:text="编辑"
                         android:textColor="@color/black"
-                        android:textSize="18sp"
                         fbutton:buttonColor="@color/white"
+                        android:textSize="18sp"
                         fbutton:shadowHeight="3dp">
                     </info.hoang8f.widget.FButton>
                 </LinearLayout>

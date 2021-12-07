@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         //deal with database
         SQLiteDatabase db = LitePal.getDatabase();
         dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
+        matterList = new MatterList(dbMatterList);
 
         main_LL1 = findViewById(R.id.main_LL1);
         main_LL2 = findViewById(R.id.main_LL2);
@@ -325,13 +326,15 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         timeThread.resumeThread();
 
 //      TODO: Make the Adapter notify more reasonable
-        matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
-        if (matterList.getCount() > 0){
+        dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
+        matterList = new MatterList(dbMatterList);
+        if (dbMatterList.size() > 0){
             mainNoMatter_LL.setVisibility(View.GONE);
         }else {
             mainNoMatter_LL.setVisibility(View.VISIBLE);
         }
-        mattersRVAdapter = new MattersRVAdapter(matterList,this,this);
+        mattersRVAdapter = new MattersRVAdapter(matterList
+                ,this,this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
@@ -354,13 +357,15 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
         mattersRVAdapter = new MattersRVAdapter(matterList,this,this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
+
+//        mainMatters_recyclerView.setOn
     }
 
     @Override
     public void OnItemClickListener(View view, int position) {
         positionOnClick = position;
         Log.d("MAIN", position + " item clicked");
-        setExpandedCards(view, position);
+//        setExpandedCards(view, position);
     }
 
     @Override
@@ -415,43 +420,42 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         dialog.getWindow().setAttributes(p);     //设置生效
     }
 
-    @SuppressLint("HandlerLeak")
-    public void setExpandedCards(View view, int position){
-        FrameLayout layout = (FrameLayout) mainMatters_recyclerView.getChildAt(position);
-        LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
-        CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
-        ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
-        FButton cardContent_btn = layout.findViewById(R.id.cardContent_btn);
-
-        cardContent_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-                if ((bottom - top) > (oldBottom - oldTop)) {
-                    layoutParams.height = bottom - top;
-                    cardContentBG_imageView.setLayoutParams(layoutParams);
-                }
-            }
-        });
-
-        if (linearLayout.getVisibility() == View.GONE) {
-            TransitionManager.beginDelayedTransition(cardContentCardView, new AutoTransition());
-            linearLayout.setVisibility(View.VISIBLE);
-        }else{
-            TransitionManager.beginDelayedTransition(cardContentCardView, new TransitionSet().addTransition(new ChangeImageTransform()));
-            linearLayout.setVisibility(View.GONE);
-            ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-            layoutParams.height = 300;
-            cardContentBG_imageView.setLayoutParams(layoutParams);
-        }
-    }
+//    public void setExpandedCards(View view, int position){
+//        FrameLayout layout = (FrameLayout) mainMatters_recyclerView.getChildAt(position);
+//        LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
+//        CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
+//        ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
+//        FButton cardContent_btn = layout.findViewById(R.id.cardContent_btn);
+//
+//        cardContent_btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+//
+//        layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+//            @Override
+//            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//                ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+//                if ((bottom - top) > (oldBottom - oldTop)) {
+//                    layoutParams.height = bottom - top;
+//                    cardContentBG_imageView.setLayoutParams(layoutParams);
+//                }
+//            }
+//        });
+//
+//        if (linearLayout.getVisibility() == View.GONE) {
+//            TransitionManager.beginDelayedTransition(cardContentCardView, new AutoTransition());
+//            linearLayout.setVisibility(View.VISIBLE);
+//        }else{
+//            TransitionManager.beginDelayedTransition(cardContentCardView, new TransitionSet().addTransition(new ChangeImageTransform()));
+//            linearLayout.setVisibility(View.GONE);
+//            ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+//            layoutParams.height = 300;
+//            cardContentBG_imageView.setLayoutParams(layoutParams);
+//        }
+//    }
 
 
     /**
