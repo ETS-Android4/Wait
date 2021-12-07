@@ -2,52 +2,29 @@ package com.example.daysmatter.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
-import android.transition.AutoTransition;
-import android.transition.ChangeBounds;
-import android.transition.ChangeClipBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeScroll;
-import android.transition.ChangeTransform;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionManager;
-import android.transition.TransitionSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.OvershootInterpolator;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -61,18 +38,9 @@ import com.hanks.htextview.evaporate.EvaporateTextView;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
-import info.hoang8f.widget.FButton;
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
-import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
-import jp.wasabeef.recyclerview.adapters.SlideInLeftAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 
 public class MainActivity extends AppCompatActivity implements MattersRVAdapter.MyOnLongClickListener, MattersRVAdapter.MyOnClickListener{
@@ -419,43 +387,6 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         dialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
         dialog.getWindow().setAttributes(p);     //设置生效
     }
-
-//    public void setExpandedCards(View view, int position){
-//        FrameLayout layout = (FrameLayout) mainMatters_recyclerView.getChildAt(position);
-//        LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
-//        CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
-//        ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
-//        FButton cardContent_btn = layout.findViewById(R.id.cardContent_btn);
-//
-//        cardContent_btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-//
-//        layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-//            @Override
-//            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//                ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-//                if ((bottom - top) > (oldBottom - oldTop)) {
-//                    layoutParams.height = bottom - top;
-//                    cardContentBG_imageView.setLayoutParams(layoutParams);
-//                }
-//            }
-//        });
-//
-//        if (linearLayout.getVisibility() == View.GONE) {
-//            TransitionManager.beginDelayedTransition(cardContentCardView, new AutoTransition());
-//            linearLayout.setVisibility(View.VISIBLE);
-//        }else{
-//            TransitionManager.beginDelayedTransition(cardContentCardView, new TransitionSet().addTransition(new ChangeImageTransform()));
-//            linearLayout.setVisibility(View.GONE);
-//            ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-//            layoutParams.height = 300;
-//            cardContentBG_imageView.setLayoutParams(layoutParams);
-//        }
-//    }
 
 
     /**

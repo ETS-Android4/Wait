@@ -10,7 +10,6 @@
         android:id="@+id/cardContentCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         app:cardElevation="100dp"
         app:cardCornerRadius="20dp">
 
@@ -39,7 +38,7 @@
 
                 <TextView
                     android:id="@+id/cardContentTitle_textView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="190sp"
                     android:layout_height="wrap_content"
                     android:text="title"
                     android:textColor="@color/black"
@@ -53,6 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="time"
+                    android:textStyle="bold"
                     android:textSize="18sp"
                     android:layout_marginStart="24sp"
                     android:layout_marginTop="3sp">
@@ -71,10 +71,10 @@
                         android:id="@+id/cardContent_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="编辑"
+                        android:text="编 辑"
                         android:textColor="@color/black"
-                        fbutton:buttonColor="@color/white"
                         android:textSize="18sp"
+                        android:textStyle="bold"
                         fbutton:shadowHeight="3dp">
                     </info.hoang8f.widget.FButton>
                 </LinearLayout>
@@ -90,6 +90,16 @@
                 android:layout_marginBottom="30sp">
 
                 <TextView
+                    android:id="@+id/cardContentRest_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="还有"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="6sp">
+                </TextView>
+
+                <TextView
                     android:id="@+id/cardContentDays_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -103,7 +113,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="天"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     android:layout_marginStart="6sp">
                 </TextView>
             </LinearLayout>

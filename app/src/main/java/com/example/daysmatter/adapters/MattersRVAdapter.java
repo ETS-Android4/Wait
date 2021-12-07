@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.AutoTransition;
@@ -54,6 +56,7 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         CardView cardContentCardView;
         TextView cardContentTitle_textView;
         TextView cardContentTime_textView;
+        TextView cardContentRest_textView;
         TextView cardContentDays_textView;
         ImageView cardContentBG_imageView;
         FButton cardContent_btn;
@@ -62,6 +65,10 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         MyOnLongClickListener myOnLongClickListener;
         MyOnClickListener myOnClickListener;
 
+        static int oldHeight = 0;
+        static int oldPosition;
+        static View oldView;
+
 
         public ViewHolder(View view, MyOnClickListener myOnClickListener, MyOnLongClickListener myOnLongClickListener) {
             super(view);
@@ -69,10 +76,14 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
             cardContentCardView = view.findViewById(R.id.cardContentCardView);
             cardContentTitle_textView = view.findViewById(R.id.cardContentTitle_textView);
             cardContentTime_textView = view.findViewById(R.id.cardContentTime_textView);
+            cardContentRest_textView = view.findViewById(R.id.cardContentRest_textView);
             cardContentDays_textView = view.findViewById(R.id.cardContentDays_textView);
             cardContentBG_imageView = view.findViewById(R.id.cardContentBG_imageView);
             cardContent_btn = view.findViewById(R.id.cardContent_btn);
             cardTime_LL = view.findViewById(R.id.cardTime_LL);
+
+            cardContent_btn.setButtonColor(0xFFFFFFFF);
+            cardContent_btn.setCornerRadius(30);
 
             this.myOnClickListener = myOnClickListener;
             this.myOnLongClickListener = myOnLongClickListener;
@@ -83,6 +94,16 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (oldPosition != getAdapterPosition() && oldView != null){
+                        TransitionManager.beginDelayedTransition(oldView.findViewById(R.id.cardContentCardView), new TransitionSet().addTransition(new ChangeImageTransform()));
+                        oldView.findViewById(R.id.cardTime_LL).setVisibility(View.GONE);
+                        ViewGroup.LayoutParams layoutParams = oldView.findViewById(R.id.cardContentBG_imageView).getLayoutParams();
+                        layoutParams.height = oldHeight;
+                        oldView.findViewById(R.id.cardContentBG_imageView).setLayoutParams(layoutParams);
+                        TransitionManager.endTransitions(oldView.findViewById(R.id.cardContentCardView));
+                    }
+                    oldPosition = getAdapterPosition();
+                    oldView = v;
                     setExpandedCards(v);
                 }
             });
@@ -99,16 +120,19 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
             return true;
         }
 
+        /**
+         * set feature of expand or shrink cards
+         * @param view
+         */
         public void setExpandedCards(View view) {
-            cardContent_btn.setButtonColor(0xFFFFFFFF);
-            cardContent_btn.setShadowColor(0xA9A9A9);
-            cardContent_btn.setCornerRadius(30);
+
             cardContentCardView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
                     if ((bottom - top) > (oldBottom - oldTop)) {
                         layoutParams.height = bottom - top;
+                        oldHeight = oldBottom - oldTop;
                         cardContentBG_imageView.setLayoutParams(layoutParams);
                     }
                 }
@@ -121,7 +145,7 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
                 TransitionManager.beginDelayedTransition(cardContentCardView, new TransitionSet().addTransition(new ChangeImageTransform()));
                 cardTime_LL.setVisibility(View.GONE);
                 ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
-                layoutParams.height = 300;
+                layoutParams.height = oldHeight;
                 cardContentBG_imageView.setLayoutParams(layoutParams);
             }
         }
@@ -158,20 +182,16 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
         //根据position将每一个list里面的值绑定到viewholder
         Matter matter = matterList.getMatter(position);
 
-//        String title = matter.getTitle();
-//        StringBuffer titleAltered = new StringBuffer();
-//        for (int i = 0; i < title.length(); i++){
-//            titleAltered.append(title.charAt(i));
-//            if (i != title.length()-1)
-//                titleAltered.append(" ");
-//        }
         viewHolder.cardContentTitle_textView.setText(matter.getTitle());
         viewHolder.cardContentTime_textView.setText(convertDateToString(matter.getTargetDate()));
+        Date date = new Date();
+        if (date.getTime() > matter.getTargetDate().getTime()){
+            viewHolder.cardContentRest_textView.setText("已经");
+        }else{
+            viewHolder.cardContentRest_textView.setText("还有");
+        }
         viewHolder.cardContentDays_textView.setText(getRemainedDays(matter.getTargetDate()));
         try {
-//            if (matter.getImagePath().equals("")){
-//                setDefaultImage(viewHolder);
-//            }
             File file = new File(matter.getImagePath());
             viewHolder.cardContentBG_imageView.setImageURI(Uri.fromFile(file));
         }catch (NullPointerException e){
@@ -194,13 +214,6 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
                 Intent intent = new Intent(viewHolder.itemView.getContext(), AddNewEventActivity.class);
                 intent.putExtra("matter", matter);
                 viewHolder.itemView.getContext().startActivity(intent);
-
-                try {
-                    File file = new File(matter.getImagePath());
-                    viewHolder.cardContentBG_imageView.setImageURI(Uri.fromFile(file));
-                }catch (NullPointerException e){
-                    setDefaultImage(viewHolder);
-                }
             }
         });
     }
@@ -219,7 +232,7 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
     }
 
     public String convertDateToString(Date date){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  hh:mm");
         return sdf.format(date);
     }
 

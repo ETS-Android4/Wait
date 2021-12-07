@@ -1,7 +1,10 @@
 package com.example.daysmatter.activities;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -22,9 +25,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -33,12 +39,15 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmallcott.dismissibleimageview.DismissibleImageView;
 import com.example.daysmatter.R;
 import com.example.daysmatter.models.Matter;
 import com.example.daysmatter.models.MatterList;
+import com.github.zagum.switchicon.SwitchIconView;
+import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 
@@ -49,23 +58,28 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+
+import info.hoang8f.widget.FButton;
 
 public class AddNewEventActivity extends AppCompatActivity {
 
     private ImageView addEventBack_imageView;
+    private SwitchIconView addEventTitle_iconView;
     private MaterialEditText addEventTitle_editText;
+    private SwitchIconView addEventDate_iconView;
     private MaterialEditText addEventPickDate_editText;
+    private SwitchIconView addEventPhoto_iconView;
     private ImageButton addEventDeletePhoto_imageView;
     private ImageButton addEventPickPhoto_imageView;
     private DismissibleImageView addEventPhoto_imageView;
-    private Button addEventSubmit_btn;
+    private FButton addEventSubmit_btn;
 
     private Date selectedDate;
-    public static final int PICK_PHOTO = 102;
     private MatterList sMatterList;
-    private MatterList sMatterListAdapter;
     private Matter sMatter;
     private String imageSourcePath = null;
 
@@ -92,12 +106,27 @@ public class AddNewEventActivity extends AppCompatActivity {
         SQLiteDatabase db = LitePal.getDatabase();
 
         addEventBack_imageView = findViewById(R.id.addEventBack_imageView);
+        addEventTitle_iconView = findViewById(R.id.addEventTitle_iconView);
         addEventTitle_editText = findViewById(R.id.addEventTitle_editText);
+        addEventDate_iconView = findViewById(R.id.addEventDate_iconView);
         addEventPickDate_editText = findViewById(R.id.addEventPickDate_editText);
+        addEventPhoto_iconView = findViewById(R.id.addEventPhoto_iconView);
         addEventDeletePhoto_imageView = findViewById(R.id.addEventDeletePhoto_imageView);
         addEventPickPhoto_imageView = findViewById(R.id.addEventPickPhoto_imageView);
         addEventPhoto_imageView = findViewById(R.id.addEventPhoto_imageView);
         addEventSubmit_btn = findViewById(R.id.addEventSubmit_btn);
+
+        addEventSubmit_btn.setButtonColor(0xFFFFFFFF);
+        addEventSubmit_btn.setCornerRadius(30);
+
+        addEventTitle_editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (Objects.requireNonNull(addEventTitle_editText.getText()).toString().equals("")) {
+                    addEventTitle_iconView.switchState();
+                }
+            }
+        });
 
         addEventBack_imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,11 +137,13 @@ public class AddNewEventActivity extends AppCompatActivity {
         });
 
         addEventPickDate_editText.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 datePicker();
             }
         });
+
 
         addEventPickPhoto_imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,13 +157,18 @@ public class AddNewEventActivity extends AppCompatActivity {
             public void onClick(View v) {
                 addEventPhoto_imageView.setImageDrawable(null);
                 imageSourcePath = null;
+                addEventPhoto_iconView.switchState();
             }
         });
 
         addEventSubmit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addEventPickDate_editText.validateWith(new RegexpValidator("日期为必填项", "^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]))$"));
+                if (!addEventTitle_editText.validateWith(new RegexpValidator("长度必须在1~20之间", "^.{1,20}$")) |
+                        !addEventPickDate_editText.validateWith(new RegexpValidator("日期为必填项", "^.{10,20}$"))){
+                    return;
+                }
+//                addEventPickDate_editText.validateWith(new RegexpValidator("日期为必填项", "^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]))$"));
                 if (sMatter == null) {
                     saveEvent();
                 }else{
@@ -201,38 +237,47 @@ public class AddNewEventActivity extends AppCompatActivity {
     /**
      * Opens date picker dialog, when date button is clicked
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void datePicker() {
-        final Calendar c = Calendar.getInstance();
-        Date newDate = new Date();
+        SwitchDateTimeDialogFragment instance = SwitchDateTimeDialogFragment.newInstance(
+                "选择日期与时间",
+                "确认",
+                "取消"
+        );
+        instance.startAtCalendarView();
+        instance.set24HoursMode(true);
+        instance.setMinimumDateTime(new GregorianCalendar(2000, Calendar.JANUARY, 1).getTime());
+        instance.setMaximumDateTime(new GregorianCalendar(2099, Calendar.DECEMBER, 31).getTime());
+        instance.setDefaultDateTime(new Date());
 
-        // Initialize values as current date
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        // Define new day and month format
+        try {
+            instance.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("dd MMMM", Locale.getDefault()));
+        } catch (SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException e) {
+            Log.e(TAG, e.getMessage());
+        }
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onDateSet(DatePicker view, int yearSelect, int monthOfYear, int dayOfMonth) {
-                        // Update Selected Date
-                        newDate.setMonth(monthOfYear);
-                        newDate.setYear(yearSelect - 1900);
-                        newDate.setDate(dayOfMonth);
-                        selectedDate = new Date(String.valueOf(newDate));
+        // Set listener
+        instance.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
+            @Override
+            public void onPositiveButtonClick(Date date) {
+                if (Objects.requireNonNull(addEventPickDate_editText.getText()).toString().equals("")){
+                    addEventDate_iconView.switchState();
+                }
+                // Date is get on positive button click
+                selectedDate = date;
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd  hh:mm");
+                addEventPickDate_editText.setText(sdf.format(date));
+            }
 
-                        // Add 1900 to year, as the getYear function returns year - 1900
+            @Override
+            public void onNegativeButtonClick(Date date) {
+                // Date is get on negative button click
+            }
+        });
 
-                        if(newDate.getDate() >= 10) {
-                            addEventPickDate_editText.setText((newDate.getYear() + 1900) + "-" +
-                                    (newDate.getMonth() + 1) + "-" + newDate.getDate());
-                        }else{
-                            addEventPickDate_editText.setText((newDate.getYear() + 1900) + "-" +
-                                    (newDate.getMonth() + 1) + "-0" + newDate.getDate());
-                        }
-                    }
-                }, year, month, day);
-        datePickerDialog.show();
+        // Show
+        instance.show(getSupportFragmentManager(), "dialog_time");
     }
 
     /**
@@ -246,22 +291,13 @@ public class AddNewEventActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
         }
         if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                "ohos.permission.WRITE_USER_STORAGE") != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(AddNewEventActivity.this,
-                    new String[]{"ohos.permission.WRITE_USER_STORAGE"}, REQUEST_PERMISSION_CODE);
-        }
-        if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                "ohos.permission.WRITE_USER_STORAGE") == PackageManager.PERMISSION_GRANTED){
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
             // open the album
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             // Intent.ACTION_GET_CONTENT = "android.intent.action.GET_CONTENT"
             intent.setType("image/*");
             AddNewEventActivity.this.startActivityForResult(intent, REQUEST_PERMISSION_CODE); // 打开相册
-        }else if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                "ohos.permission.WRITE_USER_STORAGE") == PackageManager.PERMISSION_GRANTED){
         }
-
     }
 
     @Override
@@ -278,7 +314,6 @@ public class AddNewEventActivity extends AppCompatActivity {
                         handleImageBeforeKitKat(data);
                     }
                 }
-
                 break;
             default:
                 break;
@@ -300,6 +335,16 @@ public class AddNewEventActivity extends AppCompatActivity {
             } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
                 Uri contentUri = ContentUris.withAppendedId(Uri.parse("content: //downloads/public_downloads"), Long.valueOf(docId));
                 imagePath = getImagePath(contentUri, null);
+            }else if ("com.android.externalstorage.documents".equals(uri.getAuthority())){
+                // 外部儲存空間
+                final String[] divide = docId.split(":");
+                final String type = divide[0];
+                if ("primary".equals(type)) {
+                    imagePath = Environment.getExternalStorageDirectory().getAbsolutePath().concat("/").concat(divide[1]);
+                } else {
+                    imagePath = "/storage/".concat(type).concat("/").concat(divide[1]);
+                }
+
             }
         } else if ("content".equalsIgnoreCase(uri.getScheme())) {
             // 如果是content类型的Uri，则使用普通方式处理
@@ -342,6 +387,7 @@ public class AddNewEventActivity extends AppCompatActivity {
         if (imagePath != null) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             addEventPhoto_imageView.setImageBitmap(bitmap);
+            addEventPhoto_iconView.switchState();
         } else {
             Toast.makeText(this, "获取相册图片失败", Toast.LENGTH_SHORT).show();
         }
@@ -349,12 +395,15 @@ public class AddNewEventActivity extends AppCompatActivity {
 
     public void updateAttr(){
         addEventTitle_editText.setText(sMatter.getTitle());
+        addEventTitle_iconView.switchState();
         selectedDate = sMatter.getTargetDate();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd  hh:mm");
         addEventPickDate_editText.setText(sdf.format(selectedDate));
+        addEventDate_iconView.switchState();
         try {
             File file = new File(sMatter.getImagePath());
             addEventPhoto_imageView.setImageURI(Uri.fromFile(file));
+            addEventPhoto_iconView.switchState();
         }catch (NullPointerException e){
         }
     }
