@@ -9,7 +9,7 @@ android {
         applicationId "com.example.daysmatter"
         minSdk 21
         targetSdk 31
-        versionCode 1
+        versionCode 1000001
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,4 +71,10 @@ dependencies {
 
     // animated button
     implementation 'info.hoang8f:fbutton:1.0.5'
+
+    // animated icon
+    implementation 'com.github.zagum:Android-SwitchIcon:1.4.0'
+
+    // date picker
+    implementation "com.github.Kunzisoft:Android-SwitchDateTimePicker:2.1"
 }

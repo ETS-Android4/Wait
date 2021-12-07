@@ -7,10 +7,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="ohos.permission.READ_USER_STORAGE" />
-    <uses-permission android:name="ohos.permission.WRITE_USER_STORAGE" />
-
-    <uses-feature android:name="zidane.software.ability" android:required="false" />
 
     <application
         android:name="org.litepal.LitePalApplication"
@@ -21,8 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DaysMatter" >
 
-        <meta-data android:name="permZA" android:value="true" />
-        <meta-data android:name="multiFrameworkBundle" android:value="true" />
 
         <activity
             android:name=".activities.AddNewEventActivity"

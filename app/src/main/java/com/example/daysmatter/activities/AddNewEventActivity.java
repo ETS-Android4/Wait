@@ -291,22 +291,13 @@ public class AddNewEventActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
         }
         if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                "ohos.permission.WRITE_USER_STORAGE") != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(AddNewEventActivity.this,
-                    new String[]{"ohos.permission.WRITE_USER_STORAGE"}, REQUEST_PERMISSION_CODE);
-        }
-        if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                "ohos.permission.WRITE_USER_STORAGE") == PackageManager.PERMISSION_GRANTED){
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
             // open the album
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             // Intent.ACTION_GET_CONTENT = "android.intent.action.GET_CONTENT"
             intent.setType("image/*");
             AddNewEventActivity.this.startActivityForResult(intent, REQUEST_PERMISSION_CODE); // 打开相册
-        }else if (ContextCompat.checkSelfPermission(AddNewEventActivity.this,
-                "ohos.permission.WRITE_USER_STORAGE") == PackageManager.PERMISSION_GRANTED){
         }
-
     }
 
     @Override
@@ -323,7 +314,6 @@ public class AddNewEventActivity extends AppCompatActivity {
                         handleImageBeforeKitKat(data);
                     }
                 }
-
                 break;
             default:
                 break;
