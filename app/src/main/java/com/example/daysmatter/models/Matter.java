@@ -6,7 +6,7 @@ import org.litepal.crud.LitePalSupport;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Matter extends LitePalSupport implements Serializable{
+public class Matter extends LitePalSupport implements Serializable, Comparable<Matter>{
     // remember to increment the database version number in litepal.xml after changing annotations of the attributes
 
     @Column(unique = true)
@@ -50,5 +50,10 @@ public class Matter extends LitePalSupport implements Serializable{
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    @Override
+    public int compareTo(Matter o) {
+        return this.getTitle().compareTo(o.getTitle());
     }
 }

@@ -10,10 +10,22 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
+import android.transition.AutoTransition;
+import android.transition.ChangeBounds;
+import android.transition.ChangeClipBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeScroll;
+import android.transition.ChangeTransform;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -30,8 +43,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,9 +61,15 @@ import com.hanks.htextview.evaporate.EvaporateTextView;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import info.hoang8f.widget.FButton;
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInLeftAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -98,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         //deal with database
         SQLiteDatabase db = LitePal.getDatabase();
         dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
+        matterList = new MatterList(dbMatterList);
 
         main_LL1 = findViewById(R.id.main_LL1);
         main_LL2 = findViewById(R.id.main_LL2);
@@ -238,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         // place the time information in the middle of the screen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         main_LL1.setLayoutParams(layoutParams);
         main_LL2.setVisibility(View.GONE);
@@ -262,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
     public void setPortraitAttr(){
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         frameLayoutParams.gravity = Gravity.TOP;
         main_LL1.setLayoutParams(frameLayoutParams);
         main_LL2.setVisibility(View.VISIBLE);
@@ -304,11 +326,15 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         timeThread.resumeThread();
 
 //      TODO: Make the Adapter notify more reasonable
-        matterList = new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class));
-//        if (!new MatterList((ArrayList<Matter>) LitePal.findAll(Matter.class)).equals(matterList)){
-//            mattersRVAdapter.notifyItemInserted(matterList.getCount());
-//        }
-        mattersRVAdapter = new MattersRVAdapter(matterList, this, this);
+        dbMatterList = (ArrayList<Matter>) LitePal.findAll(Matter.class);
+        matterList = new MatterList(dbMatterList);
+        if (dbMatterList.size() > 0){
+            mainNoMatter_LL.setVisibility(View.GONE);
+        }else {
+            mainNoMatter_LL.setVisibility(View.VISIBLE);
+        }
+        mattersRVAdapter = new MattersRVAdapter(matterList
+                ,this,this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
     }
 
@@ -331,12 +357,15 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         mainMatters_recyclerView.setLayoutManager(linearLayoutManager);
         mattersRVAdapter = new MattersRVAdapter(matterList,this,this);
         mainMatters_recyclerView.setAdapter(mattersRVAdapter);
+
+//        mainMatters_recyclerView.setOn
     }
 
     @Override
     public void OnItemClickListener(View view, int position) {
         positionOnClick = position;
         Log.d("MAIN", position + " item clicked");
+//        setExpandedCards(view, position);
     }
 
     @Override
@@ -367,6 +396,9 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
 //                mattersRVAdapter.notifyDataSetChanged();
                 dialog.dismiss();
                 mattersRVAdapter.notifyItemRemoved(positionOnClick);
+                if (matterList.getCount() == 0) {
+                    mainNoMatter_LL.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -386,5 +418,88 @@ public class MainActivity extends AppCompatActivity implements MattersRVAdapter.
         p.height = (int) (displayHeight * 0.20);    //宽度设置为屏幕的0.5
         dialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
         dialog.getWindow().setAttributes(p);     //设置生效
+    }
+
+//    public void setExpandedCards(View view, int position){
+//        FrameLayout layout = (FrameLayout) mainMatters_recyclerView.getChildAt(position);
+//        LinearLayout linearLayout = layout.findViewById(R.id.cardTime_LL);
+//        CardView cardContentCardView = layout.findViewById(R.id.cardContentCardView);
+//        ImageView cardContentBG_imageView = layout.findViewById(R.id.cardContentBG_imageView);
+//        FButton cardContent_btn = layout.findViewById(R.id.cardContent_btn);
+//
+//        cardContent_btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+//
+//        layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+//            @Override
+//            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//                ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+//                if ((bottom - top) > (oldBottom - oldTop)) {
+//                    layoutParams.height = bottom - top;
+//                    cardContentBG_imageView.setLayoutParams(layoutParams);
+//                }
+//            }
+//        });
+//
+//        if (linearLayout.getVisibility() == View.GONE) {
+//            TransitionManager.beginDelayedTransition(cardContentCardView, new AutoTransition());
+//            linearLayout.setVisibility(View.VISIBLE);
+//        }else{
+//            TransitionManager.beginDelayedTransition(cardContentCardView, new TransitionSet().addTransition(new ChangeImageTransform()));
+//            linearLayout.setVisibility(View.GONE);
+//            ViewGroup.LayoutParams layoutParams = cardContentBG_imageView.getLayoutParams();
+//            layoutParams.height = 300;
+//            cardContentBG_imageView.setLayoutParams(layoutParams);
+//        }
+//    }
+
+
+    /**
+     * 把毫秒数转换成天时分秒
+     * @param millis
+     * @return 格式为 dd-hh-mm-ss
+     */
+    public static String millisToStringShort(long millis) {
+        StringBuilder strBuilder = new StringBuilder();
+        long temp = millis;
+        long dper = 24 * 60 * 60 * 1000;
+        long hper = 60 * 60 * 1000;
+        long mper = 60 * 1000;
+        long sper = 1000;
+        if (temp / dper > 0) {
+            // 小时
+            strBuilder.append(temp / dper).append("-");
+        }else{
+            strBuilder.append("0").append("-");
+        }
+        temp = temp % dper;
+
+        if (temp / hper > 0) {
+            // 小时
+            strBuilder.append(temp / hper).append("-");
+        }else{
+            strBuilder.append("0").append("-");
+        }
+        temp = temp % hper;
+
+        if (temp / mper > 0) {
+            // 分钟
+            strBuilder.append(temp / mper).append("-");
+        }else{
+            strBuilder.append("0").append("-");
+        }
+        temp = temp % mper;
+
+        if (temp / sper > 0) {
+            // 秒
+            strBuilder.append(temp / sper);
+        }else{
+            strBuilder.append("0");
+        }
+        return strBuilder.toString();
     }
 }

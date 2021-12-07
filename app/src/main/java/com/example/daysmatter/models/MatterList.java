@@ -47,13 +47,13 @@ public class MatterList extends LitePalSupport implements Serializable {
         return matterList.get(index);
     }
 
-    public Matter getMatter(String title) throws Exception {
+    public Matter getMatter(String title){
         for (Matter matter : matterList) {
             if (matter.getTitle().equals(title)) {
                 return matter;
             }
         }
-        throw new Exception("Matter does not exist");
+        return null;
     }
 
     /**
