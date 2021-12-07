@@ -232,7 +232,7 @@ public class MattersRVAdapter extends RecyclerView.Adapter<MattersRVAdapter.View
     }
 
     public String convertDateToString(Date date){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  hh:mm");
         return sdf.format(date);
     }
 
