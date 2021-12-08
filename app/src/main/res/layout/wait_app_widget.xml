@@ -1,0 +1,77 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.DaysMatter.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.DaysMatter.AppWidgetContainer">
+
+    <ImageView
+        android:id="@+id/appwidgetBG_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        tools:background="@drawable/widget_bg_transparent" />
+
+    <LinearLayout
+        android:id="@+id/appwidgetTitleDate_LL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical|start">
+
+        <TextView
+            android:id="@+id/appwidgetTitle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="Title"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/appwidgetTargetDate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="3dp"
+            android:text="yyyy-MM-dd hh:mm"
+            android:maxLines="1"
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/appwidgetRemainedDays_LL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical|end">
+
+        <TextView
+            android:id="@+id/appwidgetRemainedDays_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="days"
+            android:background="@android:color/transparent"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/appwidgetDay_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="6dp"
+            android:text="天"
+            android:background="@android:color/transparent"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</FrameLayout>

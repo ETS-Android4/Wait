@@ -39,7 +39,7 @@
                     android:id="@+id/mainDateToday_textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="48dp"
+                    android:layout_marginTop="42dp"
                     android:text="yyyy/MM/dd"
                     android:format24Hour="yyyy年MM月dd日"
                     android:format12Hour="yyyy年MM月dd日"
@@ -120,7 +120,7 @@
                     android:id="@+id/mainPoweredBy_textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="54dp"
+                    android:layout_marginTop="48dp"
                     android:gravity="end"
                     android:text="POWERED BY"
                     android:textStyle="bold"
@@ -148,7 +148,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginBottom="72dp">
+            android:layout_marginBottom="12dp">
 
             <LinearLayout
                 android:id="@+id/mainNoMatter_LL"
@@ -191,14 +191,14 @@
             <me.qinc.lib.edgetranslucent.EdgeTransparentView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:edge_width="10dp"
+                app:edge_width="20dp"
                 app:edge_position="top|bottom">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/mainMatters_recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginHorizontal="24dp">
                 </androidx.recyclerview.widget.RecyclerView>
             </me.qinc.lib.edgetranslucent.EdgeTransparentView>
@@ -210,18 +210,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
-        android:layout_margin="12dp"
+        android:layout_marginVertical="12dp"
+        android:layout_marginStart="18dp"
         android:alpha="0.5"
         android:src="@drawable/ic_baseline_fullscreen_24">
     </ImageView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageView
         android:id="@+id/addMatter_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_gravity="end|bottom"
-        android:layout_margin="12dp"
+        android:layout_marginVertical="12dp"
+        android:layout_marginEnd="24dp"
+        android:padding="12dp"
         android:src="@drawable/ic_baseline_add_24"
-        android:backgroundTint="@color/white">
-    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+        android:background="@drawable/widget_icon_round_bg">
+    </ImageView>
 </FrameLayout>
