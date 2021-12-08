@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:htext="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".activities.WaitAppWidgetConfigure">
+
+    <LinearLayout
+        android:id="@+id/wConfig_LL1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:weightSum="10"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="4">
+
+                <ImageView
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_baseline_widgets_24"
+                    android:background="@drawable/widget_icon_round_bg">
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginVertical="12dp"
+                    android:text="请选择一个您用于展示的"
+                    android:textColor="@color/grey"
+                    android:textSize="12sp">
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="事件"
+                    android:textColor="@color/white"
+                    android:textSize="36sp">
+                </TextView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wConfig_LL2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:id="@+id/wConfigNoMatter_LL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="48dp"
+                android:layout_marginHorizontal="48dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_date_range_24"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="24dp">
+                </ImageView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp"
+                    android:text="你还没有添加任何事件"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="18sp">
+                </TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="添加一个让你期待的活动。比如生日、纪念日、目标日"
+                    android:textStyle="bold"
+                    android:textColor="@color/grey"
+                    android:textSize="12sp">
+                </TextView>
+            </LinearLayout>
+
+            <me.qinc.lib.edgetranslucent.EdgeTransparentView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:edge_width="10dp"
+                app:edge_position="top|bottom">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/wConfigMatters_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginHorizontal="24dp">
+                </androidx.recyclerview.widget.RecyclerView>
+            </me.qinc.lib.edgetranslucent.EdgeTransparentView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/wConfigAddMatter_imageView"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginVertical="12dp"
+        android:layout_marginEnd="24dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_baseline_add_24"
+        android:background="@drawable/widget_icon_round_bg">
+    </ImageView>
+</FrameLayout>

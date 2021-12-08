@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="5dp" />
+    <!-- 特别注意此处，不要设置透明颜色，除非你的背景透明颜色是固定的 -->
+    <solid android:color="@color/white"/>
+</shape>

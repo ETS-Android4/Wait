@@ -68,7 +68,6 @@ dependencies {
     // view edge transparent
     implementation 'ren.qinc.edgetranslucent:lib:0.0.3'
 
-
     // animated button
     implementation 'info.hoang8f:fbutton:1.0.5'
 

@@ -13,10 +13,25 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
     <style name="Theme.DaysMatter.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="Theme.DaysMatter.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="Theme.DaysMatter.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.DaysMatter.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault">
+        <item name="appWidgetRadius">8dp</item>
+        <item name="appWidgetPadding">4dp</item>
+        <item name="appWidgetInnerRadius">4dp</item>
+    </style>
+
+    <style name="Theme.DaysMatter.AppWidgetContainer" parent="Theme.DaysMatter.AppWidgetContainerParent">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/widget_bg_transparent</item>
+        <item name="android:colorPrimary">@color/white</item>
+    </style>
 </resources>
